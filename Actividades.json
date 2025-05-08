@@ -1,0 +1,13 @@
+{
+    "id": "aaa101",
+    "titulo": "Spinning",
+    "descripcion": "Clase intensa de spinning para nivel avanzado.",
+    "categoria": "Spinning",
+    "instructor": "Paula Lussana",
+    "dia": "Lunes",
+    "horario": "18:00",
+    "fecha creacion": "2023-10-02",
+    "duracion": 60,
+    "cupo": 20,
+    "resena": "Clase muy intensa, ideal para quemar calorías."
+}

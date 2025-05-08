@@ -1,0 +1,10 @@
+{
+    "id": "abc123",
+    "nombre": "Maria Luz",
+    "apellido": "Lucero",
+    "email": "luzlucero@gmail.com",
+    "DNI": 44590231,
+    "contrasena": "e99a18c428cb38d5f260853678922e03",
+    "rol": "socio",
+    "fecha creacion": "2023-10-01"
+}
