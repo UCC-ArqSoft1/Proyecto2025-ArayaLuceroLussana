@@ -3,12 +3,15 @@ package main
 import (
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type Usuario struct {
-	ID            string    `json:"id" gorm:"primarykey;autoIncrement"`
-	Nombre        string    `json:"nombre"`
-	Apellido      string    `json:"apellido"`
+	ID            string    `json:"id"`
+	Name          string    `json:"name"`
+	LastName      string    `json:"lastName"`
 	DNI           uint      `json:"DNI"`
 	Email         string    `json:"email"`
 	Contraseña    string    `json:"contraseña"`
@@ -16,29 +19,32 @@ type Usuario struct {
 	FechaCreacion time.Time `json:"fechaCreacion"`
 }
 
-type Acividades struct {
-	ID            string    `json:"id" gorm:"primarykey;autoIncrement"`
-	Dia           string    `json:"dia"`
-	Cupo          int       `json:"cupo"`
-	Horario       time.Time `json:"horario"`
-	Categoria     string    `json:"categoria"`
-	Instructor    string    `json:"instructor"`
-	Titulo        string    `json:"titulo"`
-	Descripcion   string    `json:"descripcion"`
-	Resena        string    `json:"resena"`
-	FechaCreacion time.Time `json:"fechaCreacion"`
+type Actividades struct {
+	ID           string    `json:"id"`
+	Day          string    `json:"day"`
+	Cupo         int       `json:"cupo"`
+	Horario      time.Time `json:"horario"`
+	Category     string    `json:"category"`
+	Instructor   string    `json:"instructor"`
+	Title        string    `json:"title"`
+	Description  string    `json:"description"`
+	Review       string    `json:"review"`
+	CreationDate string    `json:"creationDate"`
 }
 
-type Inscripcion struct {
-	ID               string    `json:"id" gorm:"primarykey;autoIncrement"`
-	UsuarioID        string    `json:"usuarioID"`
-	ActividadID      string    `json:"actividadID"`
-	FechaInscripcion time.Time `json:"fechaInscripcion"`
-	IsActivo         bool      `json:"estado"`
+type Inscription struct {
+	ID         string `json:"id"`
+	UserID     string `json:"user_ID"`
+	ActivityID string `json:"activity_ID"`
+	Date       string `json:"date"` // Fecha especifica de la sesion
+	//IsActivo         bool      `json:"estado"`
+	StartTime string `json:"start_time"` //Hora de inicio  Ej: "18:00"
+	EndTime   string `json:"end_time"`   //Hora de finalizacion  Ej: "19:00"
+
 }
 
 func mostrarActividades(ctx *gin.Context) {
-	var actividades []Acividades
+	var actividades []Actividades
 	if err := db.Find(&actividades).Error; err != nil {
 		ctx.IndentendJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -46,10 +52,10 @@ func mostrarActividades(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, actividades)
 }
 
-func mostrarActividById(ctx *gin.Context) {
+func mostrarActividadById(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	var actividad Acividades
+	var actividad Actividades
 	if err := db.First(&actividad, id).Error; err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, gin.H{"error": "Actividad no encontrada"})
 		return
@@ -68,9 +74,9 @@ func mostrarUsuarios(ctx *gin.Context) {
 
 func actualizarUsuarioById(ctx *gin.Context) {
 	id := ctx.Param("id")
-	var modifyUsuarioo Usuario
+	var modifyUsuario Usuario
 	var usuario Usuario
-	if err := ctx.BindJSON(&modifyUsuarioo); err != nil {
+	if err := ctx.BindJSON(&modifyUsuario); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Error al leer el cuerpo de la solicitud"})
 		return
 	}
@@ -78,14 +84,14 @@ func actualizarUsuarioById(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
 		return
 	}
-	usuario.Nombre = modifyUsuarioo.Nombre
-	usuario.Apellido = modifyUsuarioo.Apellido
-	usuario.DNI = modifyUsuarioo.DNI
-	usuario.Email = modifyUsuarioo.Email
-	usuario.Contraseña = modifyUsuarioo.Contraseña
-	usuario.Rol = modifyUsuarioo.Rol
+	usuario.Name = modifyUsuario.Name
+	usuario.LastName = modifyUsuario.LastName
+	usuario.DNI = modifyUsuario.DNI
+	usuario.Email = modifyUsuario.Email
+	usuario.Contraseña = modifyUsuario.Contraseña
+	usuario.Rol = modifyUsuario.Rol
 	db.Save(&usuario)
-	ctx.IntendedJSON(http.StatusOK, usuario)
+	ctx.IndentedJSON(http.StatusOK, usuario)
 }
 
 func borrarUsuario(ctx *gin.Context) {
@@ -100,7 +106,7 @@ func borrarUsuario(ctx *gin.Context) {
 }
 
 func crearActividad(ctx *gin.Context) {
-	var newActividad Acividades
+	var newActividad Actividades
 
 	if err := ctx.BindJSON(&actividad); err != nil {
 		return
@@ -112,8 +118,8 @@ func crearActividad(ctx *gin.Context) {
 
 func actualizarActividad(ctx *gin.Context) {
 	id := ctx.Param("id")
-	var modifyActividad Acividades
-	var actividad Acividades
+	var modifyActividad Actividades
+	var actividad Actividades
 	if err := ctx.BindJSON(&modifyActividad); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Error al leer el cuerpo de la solicitud"})
 		return
@@ -122,20 +128,44 @@ func actualizarActividad(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusNotFound, gin.H{"error": "Actividad no encontrada"})
 		return
 	}
-	actividad.Dia = modifyActividad.Dia
+	actividad.Day = modifyActividad.Day
 	actividad.Cupo = modifyActividad.Cupo
 	actividad.Horario = modifyActividad.Horario
-	actividad.Categoria = modifyActividad.Categoria
+	actividad.Category = modifyActividad.Category
 	actividad.Instructor = modifyActividad.Instructor
-	actividad.Titulo = modifyActividad.Titulo
-	actividad.Descripcion = modifyActividad.Descripcion
+	actividad.Title = modifyActividad.Title
+	actividad.Description = modifyActividad.Description
 	db.Save(&actividad)
-	ctx.IntendedJSON(http.StatusOK, actividad)
+	ctx.IndentedJSON(http.StatusOK, actividad)
 }
 
+func eliminarActividad(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	result := db.Delete(&Actividades{}, "id = ?", id)
+	if result.RowsAffected == 0 {
+		ctx.IndentedJSON(http.StatusNotFound, gin.H{"message": "Actividad no encontrada"})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Actividad eliminada"})
+}
+
+func crearInscripcion(ctx *gin.Context) {
+	var newInscripcion Inscription
+
+	if err := ctx.BindJSON(&newInscripcion); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Error al leer el cuerpo de la solicitud"})
+		return
+	}
+
+	db.Create(&newInscripcion)
+	ctx.IndentedJSON(http.StatusCreated, newInscripcion)
+}
+
+var db *gorm.DB
+
 func main() {
-	var err error
-	// db, err = gorm.Open("sqlite3", "test.db")
+	// db, err := gorm.Open("sqlite3", "test.db")
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
@@ -145,7 +175,7 @@ func main() {
 	router := gin.Default()
 	if Usuario.Rol == "admin" {
 		router.GET("/actividades", mostrarActividades)
-		router.GET("/actividades/:id", mostrarActividById)
+		router.GET("/actividades/:id", mostrarActividadById)
 		router.GET("/usuarios", mostrarUsuarios)
 		router.PUT("/usuarios/:id", actualizarUsuarioById)
 		router.DELETE("/usuarios/:id", borrarUsuario)
