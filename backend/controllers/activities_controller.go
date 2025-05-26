@@ -1,3 +1,7 @@
+//Manejar las peticiones HTTP (GET,POST,etc)
+//Son el primer punto de entrada del backend
+// Funciones como GetUsers, CreateUser, y llama a los servicios correspondientes
+//Encargan de la logica relacionada con las rutas HTTP y delegan el trabajo real a los servicios
 // Pregunta: Como vincular con la DB??
 package handlers
 

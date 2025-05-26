@@ -1,3 +1,5 @@
+//Representa el dominio del problema, con logica o interfaces de uso
+//Puede contener interfaces que definen como se usan los datos
 package domain
 
 type User struct {

@@ -1,3 +1,8 @@
+//Estructuras que representan entidades del dominio
+//Define structs que representan entidades como User, Activity, etc
+//Solo contienen la estrutura d elos datos, no logica
+
+
 package models
 
 import "time"

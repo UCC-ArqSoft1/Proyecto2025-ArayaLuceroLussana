@@ -1,3 +1,5 @@
+//Funciones que se ejecutan entre la solicitud y la respuesta
+//JWT validation, logging, etc
 package middleware
 
 import (
