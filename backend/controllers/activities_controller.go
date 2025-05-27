@@ -1,13 +1,14 @@
-//Manejar las peticiones HTTP (GET,POST,etc)
-//Son el primer punto de entrada del backend
+// Manejar las peticiones HTTP (GET,POST,etc)
+// Son el primer punto de entrada del backend
 // Funciones como GetUsers, CreateUser, y llama a los servicios correspondientes
-//Encargan de la logica relacionada con las rutas HTTP y delegan el trabajo real a los servicios
+// Encargan de la logica relacionada con las rutas HTTP y delegan el trabajo real a los servicios
 // Pregunta: Como vincular con la DB??
 package handlers
 
 import (
 	"net/http"
-	"time"
+
+	"Proyecto2025-ArayaLuceroLussana/backend/models"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -15,23 +16,10 @@ import (
 
 var db *gorm.DB
 
-type Activity struct {
-	ID           uint      `json:"id" gorm:"primaryKey;autoIncrement"`
-	Day          string    `json:"day"`
-	Cupo         int       `json:"cupo"`
-	Schedule     time.Time `json:"schedule"`
-	Category     string    `json:"category"`
-	Instructor   string    `json:"instructor"`
-	Title        string    `json:"title"`
-	Description  string    `json:"description"`
-	Review       string    `json:"review"`
-	CreationDate time.Time `json:"creationDate" gorm:"autoCreateTime"`
-}
-
 func deleteActivity(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	result := db.Delete(&Activity{}, "id = ?", id)
+	result := db.Delete(&models.Activity{}, "id = ?", id)
 	if result.RowsAffected == 0 {
 		ctx.IndentedJSON(http.StatusNotFound, gin.H{"message": "Activity not found"})
 		return
@@ -41,8 +29,8 @@ func deleteActivity(ctx *gin.Context) {
 
 func updateActivity(ctx *gin.Context) {
 	id := ctx.Param("id")
-	var modifyActivity Activity //
-	var activity Activity
+	var modifyActivity models.Activity //
+	var activity models.Activity
 	if err := ctx.BindJSON(&modifyActivity); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Error reading request body"})
 		return
@@ -63,7 +51,7 @@ func updateActivity(ctx *gin.Context) {
 }
 
 func createActivity(ctx *gin.Context) {
-	var newActivity Activity
+	var newActivity models.Activity
 
 	if err := ctx.BindJSON(&newActivity); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
@@ -77,7 +65,7 @@ func createActivity(ctx *gin.Context) {
 func getActivityById(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	var actividad Activity //model.activity
+	var actividad models.Activity //model.activity
 	if err := db.First(&actividad, id).Error; err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, gin.H{"error": "Activity not found"})
 		return
@@ -86,7 +74,7 @@ func getActivityById(ctx *gin.Context) {
 }
 
 func showActivities(ctx *gin.Context) {
-	var activities []Activity
+	var activities []models.Activity
 	if err := db.Find(&activities).Error; err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
