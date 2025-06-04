@@ -21,7 +21,7 @@ type Usuario struct {
 }
 
 type UserController struct {
-	usersService UsersService
+	usersSvervice UsersService
 }
 
 type UsersService interface {
