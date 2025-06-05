@@ -16,7 +16,7 @@ import (
 
 var DB *gorm.DB
 
-func InitConfig() {
+func InitDB() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("The file .env could not be charged, using system variables")
