@@ -3,8 +3,9 @@
 package handlers
 
 import (
-	"Proyecto2025-ArayaLuceroLussana/backend/models"
-	"Proyecto2025-ArayaLuceroLussana/backend/utils"
+	"alua/models"
+	"alua/services"
+	"alua/utils/utils"
 	"net/http"
 	"time"
 
@@ -31,7 +32,7 @@ func Register(c *gin.Context) {
 
 	user.Password = hashedPassword // Reemplaza la contraseña en el modelo con la versión hasheada
 
-	if err := services.createUser(&user); err != nil {
+	if err := services.CreateUser(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error registering user"})
 		return
 	}
@@ -50,7 +51,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	user, err := services.getUserByEmail(data.Email)
+	user, err := services.GetUserByEmail(data.Email)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid username or password"})
 		return

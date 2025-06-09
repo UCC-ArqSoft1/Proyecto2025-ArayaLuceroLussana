@@ -1,16 +1,16 @@
 package services
 
 import (
-	"Proyecto2025-ArayaLuceroLussana/backend/config"
-	"Proyecto2025-ArayaLuceroLussana/backend/models"
+	"alua/config"
+	"alua/models"
 )
 
-func createUser(user *models.User) error {
+func CreateUser(user *models.User) error {
 	return config.DB.Create(user).Error //Insert a new user in the DB
 }
 
 // GetUserByID retrieves a user by their ID from the database.
-func getUserByEmail(Email string) (*models.User, error) {
+func GetUserByEmail(Email string) (*models.User, error) {
 	var user models.User
 	if err := config.DB.Where("Email = ?", Email).First(&user).Error; err != nil {
 		return nil, err

@@ -4,8 +4,8 @@
 package services
 
 import (
-	"Proyecto2025-ArayaLuceroLussana/backend/config"
-	"Proyecto2025-ArayaLuceroLussana/backend/models"
+	"alua/config"
+	"alua/models"
 	"errors"
 )
 
@@ -17,14 +17,14 @@ var possibleStates = map[string]bool{
 }
 
 // Get all the activities from the database
-func showActivities() ([]models.Activity, error) {
+func ShowActivities() ([]models.Activity, error) {
 	var activities []models.Activity
 	result := config.DB.Find(&activities)
 	return activities, result.Error
 }
 
-// Obtener una actividad por su ID
-func getActivityById(id string) (*models.Activity, error) {
+// Get an activity by ID
+func GetActivityByID(id string) (*models.Activity, error) {
 	var activity models.Activity //Devuelve un puntero a la estructura Actividad
 	result := config.DB.First(&activity, id)
 	if result.Error != nil {
@@ -34,7 +34,7 @@ func getActivityById(id string) (*models.Activity, error) {
 }
 
 // Add a new activity to the database
-func addActivity(activity models.Activity) error {
+func AddActivity(activity models.Activity) error {
 	if !possibleStates[activity.State] {
 		return errors.New("Invalid state ")
 	}
@@ -42,22 +42,22 @@ func addActivity(activity models.Activity) error {
 }
 
 // Update an activitie preload and save the changes in the DB
-func updateActivity(id string, updatedActividad models.Actividad) error {
-	var activity models.Actividad
+func UpdateActivity(id string, updatedActivity models.Activity) error {
+	var activity models.Activity
 	result := config.DB.First(&activity, id)
 	if result.Error != nil {
 		return result.Error
 	}
 	//Update the fields of the activity with the new values
-	activity.Name = updatedActividad.Name
-	activity.Description = updatedActividad.Description
-	activity.Day = updatedActividad.Day
-	activity.Duration = updatedActividad.Duration
-	activity.State = updatedActividad.State
-	activity.Instructor = updatedActividad.Instructor
-	activity.Category = updatedActividad.Category
-	activity.Cupo = updatedActividad.Cupo
-	if !possibleStates[updatedActividad.State] {
+	activity.Title = updatedActivity.Title
+	activity.Description = updatedActivity.Description
+	activity.Day = updatedActivity.Day
+	activity.Duration = updatedActivity.Duration
+	activity.State = updatedActivity.State
+	activity.Instructor = updatedActivity.Instructor
+	activity.Category = updatedActivity.Category
+	activity.Cupo = updatedActivity.Cupo
+	if !possibleStates[updatedActivity.State] {
 		return errors.New("Invalid State. Must be 'active', 'cancelled' o 'finished'")
 	}
 
@@ -65,7 +65,7 @@ func updateActivity(id string, updatedActividad models.Actividad) error {
 }
 
 // Delete an activity by id
-func deleteActivity(id uint) error {
+func DeleteActivity(id uint) error {
 	result := config.DB.Delete(&models.Activity{}, id) //usa soft delete por defecto (gorm.model) el registro no se borra del todo sino se marca como eliminado
 	return result.Error
 }

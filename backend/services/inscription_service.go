@@ -1,27 +1,28 @@
 package services
 
 import (
-	"Proyecto2025-ArayaLuceroLussana/backend/config"
-	"Proyecto2025-ArayaLuceroLussana/backend/models"
+	"alua/config"
+	"alua/models"
 	"errors"
 	"time"
 )
 
 // Create a new inscription for an activity
-func createInscription(UserID uint, ActivityID uint) error {
+func CreateInscription(UserID uint, ActivityID uint) error {
 
 	// Verify if the user is already registered for the activity
-	err := config.DB.Where("UserID = ? AND ActivityID = ?", UserID, ActivityID).First(&inscripcion).Error
+	var inscription models.Inscription
+	err := config.DB.Where("UserID = ? AND ActivityID = ?", UserID, ActivityID).First(&inscription).Error
 	if err == nil {
 		return errors.New("User already registered for this activity")
 	}
 
 	// verify if the activity already exists and there's a spot available
-	var activity models.Actividad
+	var activity models.Activity
 	if err := config.DB.First(&activity, ActivityID).Error; err != nil {
 		return errors.New("Activity not found")
 	}
-
+	// Check if the activity is active
 	if activity.State != "active" {
 		return errors.New("Inscription couldn't be done: activity is not active")
 	}
@@ -37,14 +38,14 @@ func createInscription(UserID uint, ActivityID uint) error {
 		UserID:     UserID,
 		ActivityID: ActivityID,
 		Date:       time.Now().Format("2006-01-02"),
-		Estado:     "Confirmed", // Default state
+		State:      "Confirmed", // Default state
 	}
 
 	return config.DB.Create(&new).Error
 }
 
 // Change the state of an inscription
-func editInscriptionn(id uint, new models.Inscription, UserID uint) error {
+func EditInscription(id uint, new models.Inscription, UserID uint) error {
 	var inscription models.Inscription
 
 	//Search for the inscription by id
@@ -63,7 +64,7 @@ func editInscriptionn(id uint, new models.Inscription, UserID uint) error {
 }
 
 // Delete an inscription
-func deleteInscripction(id uint, UserID uint) error {
+func DeleteInscription(id uint, UserID uint) error {
 	var inscription models.Inscription
 
 	//Search for the inscription by id

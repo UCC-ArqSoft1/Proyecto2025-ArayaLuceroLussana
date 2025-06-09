@@ -3,15 +3,15 @@
 package handlers
 
 import (
-	"Proyecto2025-ArayaLuceroLussana/backend/models"
-	"Proyecto2025-ArayaLuceroLussana/backend/services"
+	"alua/models"
+	"alua/services"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func createInscription(c *gin.Context) {
+func CreateInscription(c *gin.Context) {
 	// Obtener ID del usuario desde el token, verifica que el usuarioid de la URL coincida con el id del token
 	tokenUserIDRaw, exists := c.Get("UserID")
 	if !exists {
@@ -45,7 +45,7 @@ func createInscription(c *gin.Context) {
 	}
 
 	// Call the service to create the inscription
-	err = services.createInscription(userID, activityID)
+	err = services.CreateInscription(userID, activityID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -54,11 +54,11 @@ func createInscription(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Inscription created successfully"})
 }
 
-func editInscription(c *gin.Context) { //permite cambiar el estado sin eliminar la inscripcion
+func EditInscription(c *gin.Context) { //permite cambiar el estado sin eliminar la inscripcion
 	// Obtener el ID del usuario desde el token
-	tokenUserIDRaw, exists := c.Get("usuarioID")
+	tokenUserIDRaw, exists := c.Get("UserID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"mensaje": "Token inválido"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
 		return
 	}
 	tokenUserID := uint(tokenUserIDRaw.(float64))
@@ -67,42 +67,42 @@ func editInscription(c *gin.Context) { //permite cambiar el estado sin eliminar 
 	idStr := c.Param("id")
 	idParsed, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"mensaje": "ID de inscripción inválido"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Inscription ID invalid"})
 		return
 	}
 	inscripcionID := uint(idParsed)
 
 	// Obtener los nuevos datos del cuerpo de la solicitud
-	var nueva models.Inscripcion
+	var nueva models.Inscription
 	if err := c.ShouldBindJSON(&nueva); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"mensaje": "Datos inválidos"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid data"})
 		return
 	}
 
 	// Validar que el estado sea uno permitido
 	estadoValido := map[string]bool{
-		"pendiente":  true,
-		"confirmada": true,
-		"cancelada":  true,
+		"Waiting":   true,
+		"Confirmed": true,
+		"Cancelled": true,
 	}
-	if !estadoValido[nueva.Estado] {
+	if !estadoValido[nueva.State] {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"mensaje": "Estado inválido. Debe ser 'pendiente', 'confirmada' o 'cancelada'",
+			"message": "Invalid state. Must be 'Waiting', 'Confirmed' o 'Cancelled'",
 		})
 		return
 	}
 
 	// Llamar al servicio para editar la inscripción
-	if err := services.EditarInscripcion(inscripcionID, nueva, tokenUserID); err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"mensaje": err.Error()})
+	if err := services.EditInscription(inscripcionID, nueva, tokenUserID); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"message": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"mensaje": "Inscripción actualizada correctamente"})
+	c.JSON(http.StatusOK, gin.H{"message": "Inscripción actualizada correctamente"})
 }
 
 // maneja la eliminación de una inscripción
-func EliminarInscripcion(c *gin.Context) {
+func DeleteInscription(c *gin.Context) {
 	tokenUserIDRaw, exists := c.Get("usuarioID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"mensaje": "Token inválido"})
@@ -119,7 +119,7 @@ func EliminarInscripcion(c *gin.Context) {
 	}
 	inscripcionID := uint(idParsed)
 
-	if err := services.EliminarInscripcion(inscripcionID, tokenUserID); err != nil {
+	if err := services.DeleteInscription(inscripcionID, tokenUserID); err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"mensaje": err.Error()})
 		return
 	}

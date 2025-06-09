@@ -3,7 +3,8 @@
 package handlers
 
 import (
-	"Proyecto2025-ArayaLuceroLussana/backend/models"
+	"alua/models"
+	"alua/services"
 	"net/http"
 	"strconv"
 
@@ -11,8 +12,8 @@ import (
 )
 
 // Get all the activities
-func showActivities(c *gin.Context) {
-	activities, err := services.showActivities()
+func ShowActivities(c *gin.Context) {
+	activities, err := services.ShowActivities()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting the activities"})
 		return
@@ -21,9 +22,9 @@ func showActivities(c *gin.Context) {
 }
 
 // tener actividad especifica por ID
-func getActivityByID(c *gin.Context) {
+func GetActivityByID(c *gin.Context) {
 	id := c.Param("id")
-	activity, err := services.getActivityById(id)
+	activity, err := services.GetActivityByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Activity not found"})
 		return
@@ -32,14 +33,14 @@ func getActivityByID(c *gin.Context) {
 }
 
 // Add a new activity (admin)
-func addActivity(c *gin.Context) {
-	var activity models.Actividad
+func AddActivity(c *gin.Context) {
+	var activity models.Activity
 	if err := c.ShouldBindJSON(&activity); err != nil { //usa sbj para tranformar el JSON en una estructura actividad
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid data"})
 		return
 	}
 
-	if err := services.addActivity(activity); err != nil {
+	if err := services.AddActivity(activity); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error creating the activity"})
 		return
 	}
@@ -48,14 +49,14 @@ func addActivity(c *gin.Context) {
 }
 
 // Update an activity preload (admin)
-func updateActivity(c *gin.Context) {
+func UpdateActivity(c *gin.Context) {
 	id := c.Param("id") //recibe el id por URL y los datos nuevos en el body de la petición (json)
 	var data models.Activity
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid data"})
 		return
 	}
-	if err := services.updateActivity(id, data); err != nil {
+	if err := services.UpdateActivity(id, data); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error updating the activity"})
 		return
 	}
@@ -63,14 +64,14 @@ func updateActivity(c *gin.Context) {
 }
 
 // Delete an activity (admin)
-func deleteActivity(c *gin.Context) {
+func DeleteActivity(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 64) //convierte el ID recibido como string a tipo uint
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid ID "})
 		return
 	}
-	if err := services.deleteActivity(uint(id)); err != nil {
+	if err := services.DeleteActivity(uint(id)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error deleting the activity"})
 		return
 	}
