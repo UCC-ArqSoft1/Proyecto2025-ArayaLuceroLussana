@@ -7,7 +7,7 @@ const actividadesDataInicial = [
         nombre: "Surf",
         descripcion: "Clases para todos los niveles, desde principiantes hasta avanzados.",
         profesor: "Juan Pérez",
-        horarios: "Lunes, Miércoles y Viernes 8:00 - 10:00",
+        horarios: "Lunes - Miércoles - Viernes 8:00 - 10:00",
         cupos: 15,
         foto: "/surf.png",
     },
@@ -16,7 +16,7 @@ const actividadesDataInicial = [
         nombre: "Yoga",
         descripcion: "Yoga frente al mar para relajarte y mejorar tu flexibilidad.",
         profesor: "María López",
-        horarios: "Martes y Jueves 18:00 - 19:30",
+        horarios: "Martes - Jueves 18:00 - 19:30",
         cupos: 20,
         foto: "/yoga.png",
     },
@@ -51,13 +51,20 @@ const Activities = () => {
         return savedInscripciones ? JSON.parse(savedInscripciones) : [];
     });
 
-    // Efecto para guardar las inscripciones en localStorage cada vez que cambian
     useEffect(() => {
         localStorage.setItem("userInscripciones", JSON.stringify(inscripciones));
     }, [inscripciones]);
 
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     const role = localStorage.getItem("role") || "";
+
+    // Función para cerrar sesión
+    const handleLogout = () => {
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("role");
+        localStorage.removeItem("userInscripciones");
+        window.location.reload();
+    };
 
     const abrirDetalle = (actividad) => {
         setActividadSeleccionada(actividad);
@@ -69,7 +76,6 @@ const Activities = () => {
         setShowForm(false);
     };
 
-    // Función para manejar inscripción y desinscripción
     const handleToggleInscription = (actividadId, nombreActividad) => {
         if (inscripciones.includes(actividadId)) {
             if (window.confirm(`¿Estás seguro de que quieres dar de baja de ${nombreActividad}?`)) {
@@ -85,7 +91,7 @@ const Activities = () => {
     const handleEliminarActividad = (id) => {
         if (window.confirm("¿Seguro que deseas eliminar esta actividad?")) {
             setActividades(actividades.filter((act) => act.id !== id));
-            setInscripciones(inscripciones.filter((inscId) => inscId !== id)); // Eliminar de inscripciones también
+            setInscripciones(inscripciones.filter((inscId) => inscId !== id));
             cerrarDetalle();
         }
     };
@@ -125,15 +131,20 @@ const Activities = () => {
         setBusqueda(e.target.value);
     };
 
+    // FILTRO: Solo por las primeras 3 letras de nombre o horarios
     const actividadesFiltradasPorBusqueda = actividades.filter((act) => {
         const textoBusqueda = busqueda.toLowerCase();
+        if (textoBusqueda.length === 0) return true;
+
+        const nombreSubstr = act.nombre.toLowerCase().substring(0, 3);
+        const horariosSubstr = act.horarios.toLowerCase().substring(0, 3);
+
         return (
-            act.nombre.toLowerCase().includes(textoBusqueda) ||
-            act.horarios.toLowerCase().includes(textoBusqueda)
+            nombreSubstr.startsWith(textoBusqueda) ||
+            horariosSubstr.startsWith(textoBusqueda)
         );
     });
 
-    // Actividades a las que el usuario está inscrito
     const misActividadesInscritas = actividades.filter((act) =>
         inscripciones.includes(act.id)
     );
@@ -142,16 +153,21 @@ const Activities = () => {
         <section className="actividades">
             <h3>Nuestras Actividades</h3>
 
-            {/* Controles: Búsqueda y botones de acción */}
             <div className="controles-actividades">
                 <input
                     type="text"
-                    placeholder="Buscar por nombre o día..."
+                    placeholder="Buscar activu por nombre o día..."
                     value={busqueda}
                     onChange={handleBusquedaChange}
                     className="input-busqueda"
                     aria-label="Buscar actividades por nombre o día"
                 />
+
+                {isLoggedIn && (
+                    <button className="btn-logout" onClick={handleLogout}>
+                        Cerrar Sesión
+                    </button>
+                )}
 
                 {isLoggedIn && role === "admin" && (
                     <button className="btn-agregar" onClick={() => setShowForm((prev) => !prev)}>
@@ -160,7 +176,6 @@ const Activities = () => {
                 )}
             </div>
 
-            {/* Formulario para agregar nueva actividad (solo admin) */}
             {showForm && (
                 <form className="formulario-nueva-actividad" onSubmit={handleAgregarActividad}>
                     <input
@@ -218,7 +233,6 @@ const Activities = () => {
                 </form>
             )}
 
-            {/* Grilla de todas las actividades (filtradas por búsqueda) */}
             <div className="actividades-grid">
                 {actividadesFiltradasPorBusqueda.length > 0 ? (
                     actividadesFiltradasPorBusqueda.map((act) => (
@@ -240,7 +254,6 @@ const Activities = () => {
                 )}
             </div>
 
-            {/* --- Detalle de la actividad seleccionada y Mis Actividades --- */}
             {actividadSeleccionada && (
                 <div className="detalle-actividad">
                     <button className="cerrar" onClick={cerrarDetalle} aria-label="Cerrar detalle">
@@ -279,15 +292,15 @@ const Activities = () => {
                                 <strong>Profesor:</strong> {actividadSeleccionada.profesor}
                             </p>
                             <p>
-                                <strong>Días / Horarios:</strong> {actividadSeleccionada.horarios}
+                                <strong>Horarios:</strong> {actividadSeleccionada.horarios}
                             </p>
                             <p>
-                                <strong>Cupos disponibles:</strong> {actividadSeleccionada.cupos}
+                                <strong>Cupos:</strong> {actividadSeleccionada.cupos}
                             </p>
 
-                            {isLoggedIn && role === "user" && (
+                            {isLoggedIn && (
                                 <button
-                                    className={inscripciones.includes(actividadSeleccionada.id) ? "btn-dar-baja" : "btn-inscribir"}
+                                    className="btn-inscripcion"
                                     onClick={() =>
                                         handleToggleInscription(
                                             actividadSeleccionada.id,
@@ -295,68 +308,38 @@ const Activities = () => {
                                         )
                                     }
                                 >
-                                    {inscripciones.includes(actividadSeleccionada.id) ? "Dar de Baja" : "Inscribirse"}
+                                    {inscripciones.includes(actividadSeleccionada.id)
+                                        ? "Dar de Baja"
+                                        : "Inscribirse"}
                                 </button>
                             )}
 
                             {isLoggedIn && role === "admin" && (
-                                <div className="botones-admin">
-                                    <button
-                                        className="btn-eliminar"
-                                        onClick={() => handleEliminarActividad(actividadSeleccionada.id)}
-                                    >
-                                        Eliminar actividad
-                                    </button>
-                                    <button
-                                        className="btn-editar"
-                                        onClick={() => alert("Función de editar no implementada aún")}
-                                    >
-                                        Editar actividad
-                                    </button>
-                                </div>
+                                <button
+                                    className="btn-eliminar"
+                                    onClick={() => handleEliminarActividad(actividadSeleccionada.id)}
+                                >
+                                    Eliminar Actividad
+                                </button>
                             )}
                         </div>
                     </div>
-
-                    {/* --- Sección de Mis Actividades ahora dentro del detalle --- */}
-                    {isLoggedIn && role === "user" && (
-                        <>
-                            <hr className="divider" /> {/* Divisor visual */}
-                            <h3 className="section-title">Mis Actividades Inscritas</h3>
-                            {misActividadesInscritas.length > 0 ? (
-                                <div className="mis-actividades-grid">
-                                    {misActividadesInscritas.map((act) => (
-                                        <div
-                                            key={`my-${act.id}`} // Usar una key única para evitar conflictos
-                                            className="actividad my-actividad"
-                                            onClick={() => abrirDetalle(act)}
-                                            tabIndex={0}
-                                            role="button"
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Enter") abrirDetalle(act);
-                                            }}
-                                        >
-                                            {act.nombre}
-                                            <button
-                                                className="btn-dar-baja-inline"
-                                                onClick={(e) => {
-                                                    e.stopPropagation(); // Evita abrir el detalle al dar de baja
-                                                    handleToggleInscription(act.id, act.nombre);
-                                                }}
-                                                aria-label={`Dar de baja de ${act.nombre}`}
-                                            >
-                                                &times;
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="no-inscripciones-msg">No estás inscrito en ninguna actividad aún.</p>
-                            )}
-                        </>
-                    )}
-                    {/* --- Fin Sección de Mis Actividades (dentro del detalle) --- */}
                 </div>
+            )}
+
+            {isLoggedIn && (
+                <>
+                    <h4>Mis Actividades Inscritas</h4>
+                    {misActividadesInscritas.length > 0 ? (
+                        <ul className="mis-inscripciones">
+                            {misActividadesInscritas.map((act) => (
+                                <li key={act.id}>{act.nombre}</li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No estás inscripto en ninguna actividad.</p>
+                    )}
+                </>
             )}
         </section>
     );

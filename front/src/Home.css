@@ -44,8 +44,8 @@
     padding: 12px 28px;
     border: none;
     border-radius: 25px;
-    background-color: #00bfa5;
-    color: white;
+    background-color: #90e0ef;
+    color: rgb(59, 107, 108);
     font-size: 1rem;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.2s;

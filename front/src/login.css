@@ -90,3 +90,38 @@
     background-color: #4DB6AC;
     /* Verde agua */
 }
+
+
+.logout-section {
+    background-color: rgba(236, 239, 241, 0.95);
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(55, 71, 79, 0.3);
+    width: 320px;
+    text-align: center;
+}
+
+.logout-section h2 {
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #4DB6AC;
+}
+
+.btn-logout {
+    padding: 0.8rem;
+    background-color: #FF6B6B;
+    /* Rojo suave */
+    color: white;
+    border: none;
+    border-radius: 1rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-weight: 600;
+}
+
+.btn-logout:hover {
+    background-color: #FF8A65;
+    /* Rojo-naranja suave */
+}

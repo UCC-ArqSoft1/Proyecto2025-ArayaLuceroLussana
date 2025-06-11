@@ -275,7 +275,7 @@
 .divider {
     border: 0;
     height: 1px;
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), #0077b6, rgba(0, 0, 0, 0));
+    background-image: linear-gradient(to right, rgba(54, 164, 139, 0), #0077b6, rgba(120, 25, 25, 0));
     margin: 40px 0;
 }
 
@@ -294,22 +294,6 @@
     margin-bottom: 30px;
 }
 
-.my-actividad {
-    background: #64c6b1;
-    /* Un color ligeramente diferente para distinguirlas */
-    border: 1px solid #00b4d8;
-    position: relative;
-    /* Para posicionar el botón de cerrar */
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    cursor: pointer;
-}
-
-.my-actividad:hover,
-.my-actividad:focus {
-    background-color: #3ace96;
-    transform: scale(1.05);
-    outline: none;
-}
 
 .btn-dar-baja-inline {
     position: absolute;
@@ -374,4 +358,33 @@
 .btn-dar-baja-inline {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+}
+
+.cartel-sesion {
+    padding: 10px;
+    background-color: #5fb38d;
+    color: #0f5132;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1rem;
+}
+
+.btn-logout {
+    background-color: #d90429;
+    /* rojo intenso */
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(217, 4, 41, 0.6);
+    transition: background-color 0.3s ease;
+    margin-left: auto;
+    /* para que se alinee a la derecha si está en un flex container */
+    display: block;
 }
