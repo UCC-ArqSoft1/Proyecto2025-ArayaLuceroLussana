@@ -1,0 +1,92 @@
+.login-container {
+    background: url("/INICIO.PNG") no-repeat center center fixed;
+    background-size: cover;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #37474F;
+}
+
+.login-form {
+    background-color: rgba(236, 239, 241, 0.95);
+    /* Gris claro piedra */
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(55, 71, 79, 0.3);
+    width: 320px;
+    text-align: center;
+}
+
+.login-form h1 {
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: #4DB6AC;
+    /* Verde agua */
+}
+
+.login-form input,
+.login-form button {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login-form input {
+    padding: 0.8rem;
+    border: 2px solid #4DB6AC;
+    border-radius: 1rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+    background-color: white;
+    color: #37474F;
+}
+
+.login-form input:focus {
+    border-color: #4FC3F7;
+    /* Azul suave */
+    outline: none;
+}
+
+.login-form button {
+    padding: 0.8rem;
+    background-color: #4DB6AC;
+    /* Verde agua */
+    color: white;
+    border: none;
+    border-radius: 1rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+.login-form button:hover {
+    background-color: #4FC3F7;
+    /* Azul petróleo claro */
+}
+
+.btn-home {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #37474F;
+    /* Gris grafito */
+    color: white;
+    border: none;
+    border-radius: 1rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+.btn-home:hover {
+    background-color: #4DB6AC;
+    /* Verde agua */
+}

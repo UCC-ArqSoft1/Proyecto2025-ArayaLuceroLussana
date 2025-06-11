@@ -1,0 +1,377 @@
+/* Activities.css */
+
+.actividades {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    background: #f7f9fc;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.actividades h3 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #0077b6;
+    font-weight: 700;
+}
+
+.input-busqueda {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.input-busqueda input {
+    padding: 8px 12px;
+    font-size: 1rem;
+    border: 2px solid #90e0ef;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    min-width: 180px;
+}
+
+.input-busqueda input:focus {
+    border-color: #0077b6;
+}
+
+.btn-agregar {
+    background-color: #00b4d8;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 0 auto 20px auto;
+    display: block;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 180, 216, 0.6);
+}
+
+.btn-agregar:hover {
+    background-color: #0077b6;
+}
+
+.formulario-nueva-actividad {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 30px;
+    background-color: #caf0f8;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 10px #90e0ef;
+}
+
+.formulario-nueva-actividad input,
+.formulario-nueva-actividad textarea {
+    padding: 10px;
+    border: 2px solid #90e0ef;
+    border-radius: 6px;
+    font-size: 1rem;
+    resize: vertical;
+    font-family: 'Arial', sans-serif;
+}
+
+.formulario-nueva-actividad input:focus,
+.formulario-nueva-actividad textarea:focus {
+    border-color: #0077b6;
+    outline: none;
+}
+
+.formulario-nueva-actividad button {
+    background-color: #0077b6;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 1.1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 119, 182, 0.6);
+    transition: background-color 0.3s ease;
+}
+
+.formulario-nueva-actividad button:hover {
+    background-color: #023e8a;
+}
+
+.actividades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.actividad {
+    background: #ade8f4;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    user-select: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.actividad:hover,
+.actividad:focus {
+    background-color: #90e0ef;
+    transform: scale(1.05);
+    outline: none;
+}
+
+.detalle-actividad {
+    background: #caf0f8;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    position: relative;
+
+    /* Animación suave */
+    animation: fadeInScale 0.3s ease forwards;
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+@keyframes fadeInScale {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.detalle-actividad .cerrar {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #0077b6;
+    font-weight: 700;
+    line-height: 1;
+    transition: color 0.3s ease;
+}
+
+.detalle-actividad .cerrar:hover,
+.detalle-actividad .cerrar:focus {
+    color: #023e8a;
+    outline: 2px solid #00b4d8;
+    outline-offset: 2px;
+}
+
+.detalle-actividad h2 {
+    margin-bottom: 15px;
+    color: #00b6b3;
+    font-weight: 700;
+}
+
+.detalle-contenido {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.foto-actividad {
+    max-width: 250px;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 119, 182, 0.3);
+    object-fit: cover;
+}
+
+.detalle-texto {
+    flex: 1;
+    font-size: 1rem;
+    color: #023e8a;
+    min-width: 250px;
+}
+
+.detalle-texto p {
+    margin: 8px 0;
+}
+
+.btn-inscribir,
+.btn-eliminar,
+.btn-editar {
+    margin-top: 15px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: white;
+    display: inline-block;
+}
+
+.btn-inscribir {
+    background-color: #0077b6;
+}
+
+.btn-inscribir:hover {
+    background-color: #023e8a;
+}
+
+.botones-admin {
+    margin-top: 15px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-eliminar {
+    background-color: #d90429;
+}
+
+.btn-eliminar:hover {
+    background-color: #a1031f;
+}
+
+.btn-editar {
+    background-color: #ffb703;
+    color: #023e8a;
+}
+
+.btn-editar:hover {
+    background-color: #eaaa00;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+    .detalle-contenido {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .detalle-texto {
+        min-width: unset;
+    }
+
+    .foto-actividad {
+        max-width: 100%;
+    }
+
+    .mis-actividades-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Nuevos estilos para la sección "Mis Actividades" */
+
+.divider {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), #0077b6, rgba(0, 0, 0, 0));
+    margin: 40px 0;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #0077b6;
+    font-weight: 700;
+}
+
+.mis-actividades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.my-actividad {
+    background: #64c6b1;
+    /* Un color ligeramente diferente para distinguirlas */
+    border: 1px solid #00b4d8;
+    position: relative;
+    /* Para posicionar el botón de cerrar */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.my-actividad:hover,
+.my-actividad:focus {
+    background-color: #3ace96;
+    transform: scale(1.05);
+    outline: none;
+}
+
+.btn-dar-baja-inline {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #d90429;
+    color: rgb(95, 120, 90);
+    border: none;
+    border-radius: 50%;
+    /* Para hacerlo redondo */
+    width: 25px;
+    height: 25px;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 0;
+    line-height: 1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.btn-dar-baja-inline:hover {
+    background-color: #a1031f;
+}
+
+.no-inscripciones-msg {
+    text-align: center;
+    color: #666;
+    margin-top: 20px;
+    font-style: italic;
+}
+
+/* Inputs y textarea deshabilitados */
+.formulario-nueva-actividad input:disabled,
+.formulario-nueva-actividad textarea:disabled {
+    background-color: #e0f0f9;
+    border-color: #90e0ef;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* Cursor pointer en elementos clicables */
+.actividad,
+.btn-agregar,
+.btn-inscribir,
+.btn-eliminar,
+.btn-editar,
+.btn-dar-baja-inline,
+.formulario-nueva-actividad button {
+    cursor: pointer;
+}
+
+/* Ajustes táctiles para móviles */
+.input-busqueda input,
+.btn-agregar,
+.formulario-nueva-actividad button,
+.btn-inscribir,
+.btn-eliminar,
+.btn-editar,
+.btn-dar-baja-inline {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
