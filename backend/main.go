@@ -6,6 +6,8 @@ import (
 	"alua/handlers"
 	"alua/middleware"
 
+	"github.com/gin-contrib/cors"
+
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +16,8 @@ import (
 func main() {
 	config.InitDB()    // Inicializar la conexión a la base de datos (primero al iniciar programa)
 	r := gin.Default() // Crear una nueva instancia del framework web gin
+
+	r.Use(cors.Default()) //Esto habilita CORS con configuración por defecto
 
 	//rutas publicas (disponibles sin autenticación)
 	// Rutas públicas
@@ -41,8 +45,8 @@ func main() {
 		socio.DELETE("/inscription/:id", handlers.DeleteInscription)
 	}
 
-	// Iniciar el servidor en el puerto 80
-	if err := r.Run(":80"); err != nil {
+	// Iniciar el servidor en el puerto 8080
+	if err := r.Run(":8080"); err != nil {
 		log.Fatal("Error al iniciar el servidor:", err)
 	}
 }

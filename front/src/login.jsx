@@ -9,38 +9,63 @@ const Login = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [role, setRole] = useState('');
 
-    // Verificamos si ya está logueado al cargar el componente
+    // Al cargar el componente, recuperamos el estado de sesión
     useEffect(() => {
         const storedLogin = localStorage.getItem('isLoggedIn') === 'true';
         const storedRole = localStorage.getItem('role');
         setIsLoggedIn(storedLogin);
-        setRole(storedRole);
+        setRole(storedRole || '');
     }, []);
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        if (username === 'admin' && password === 'admin') {
+
+        try {
+            const response = await fetch('http://localhost:8080/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: username,
+                    password: password,
+                }),
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                alert(err.message || 'Error al iniciar sesión');
+                return;
+            }
+
+            const data = await response.json();
+            const token = data.Token;
+
+            // Decodificamos el JWT para obtener el rol del usuario
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const payload = JSON.parse(atob(base64));
+            const userRole = payload.Rol;
+
+            // Guardamos los datos en localStorage
             localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('role', 'admin');
+            localStorage.setItem('role', userRole);
+            localStorage.setItem('token', token);
+
             setIsLoggedIn(true);
-            setRole('admin');
-            alert('Login exitoso como administrador');
+            setRole(userRole);
+            alert(`Login exitoso como ${userRole}`);
             navigate('/');
-        } else if (username === 'user' && password === 'user') {
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('role', 'user');
-            setIsLoggedIn(true);
-            setRole('user');
-            alert('Login exitoso como usuario');
-            navigate('/');
-        } else {
-            alert('Usuario o contraseña incorrectos');
+        } catch (error) {
+            console.error('Error en login:', error);
+            alert('Error de conexión con el servidor');
         }
     };
 
     const handleLogout = () => {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('role');
+        localStorage.removeItem('token');
         setIsLoggedIn(false);
         setRole('');
         alert('Sesión cerrada correctamente');
@@ -54,7 +79,7 @@ const Login = () => {
                     <h1>Iniciar sesión</h1>
                     <input
                         type="text"
-                        placeholder="Usuario"
+                        placeholder="Usuario (email)"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
