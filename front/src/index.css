@@ -1,8 +1,15 @@
 html,
 body {
   margin: 0;
-  padding: 0;
-  height: 100%;
+  display: flex;
+  justify-content: center;
+  /* centrar horizontal */
+  align-items: center;
+  /* centrar vertical */
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* evitar scroll horizontal */
 }
 
 

@@ -131,7 +131,7 @@ const Activities = () => {
         setBusqueda(e.target.value);
     };
 
-    // FILTRO: Solo por las primeras 3 letras de nombre o horarios
+
     const actividadesFiltradasPorBusqueda = actividades.filter((act) => {
         const textoBusqueda = busqueda.toLowerCase();
         if (textoBusqueda.length === 0) return true;
@@ -328,7 +328,7 @@ const Activities = () => {
             )}
 
             {isLoggedIn && (
-                <>
+                <div className="mis-actividades-section">
                     <h4>Mis Actividades Inscritas</h4>
                     {misActividadesInscritas.length > 0 ? (
                         <ul className="mis-inscripciones">
@@ -339,8 +339,9 @@ const Activities = () => {
                     ) : (
                         <p>No estás inscripto en ninguna actividad.</p>
                     )}
-                </>
+                </div>
             )}
+
         </section>
     );
 };

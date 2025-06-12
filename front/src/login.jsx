@@ -6,10 +6,11 @@ const Login = () => {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [role, setRole] = useState('');
+    const [isRegistering, setIsRegistering] = useState(false);
 
-    // Verificamos si ya está logueado al cargar el componente
     useEffect(() => {
         const storedLogin = localStorage.getItem('isLoggedIn') === 'true';
         const storedRole = localStorage.getItem('role');
@@ -19,6 +20,10 @@ const Login = () => {
 
     const handleLogin = (e) => {
         e.preventDefault();
+
+        const storedUser = localStorage.getItem('newUser');
+        const storedPass = localStorage.getItem('newPass');
+
         if (username === 'admin' && password === 'admin') {
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('role', 'admin');
@@ -26,7 +31,10 @@ const Login = () => {
             setRole('admin');
             alert('Login exitoso como administrador');
             navigate('/');
-        } else if (username === 'user' && password === 'user') {
+        } else if (
+            (username === 'user' && password === 'user') ||
+            (username === storedUser && password === storedPass)
+        ) {
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('role', 'user');
             setIsLoggedIn(true);
@@ -36,6 +44,18 @@ const Login = () => {
         } else {
             alert('Usuario o contraseña incorrectos');
         }
+    };
+
+    const handleRegister = (e) => {
+        e.preventDefault();
+        localStorage.setItem('newUser', username);
+        localStorage.setItem('newPass', password);
+        localStorage.setItem('newEmail', email);
+        alert('Usuario registrado con éxito');
+        setIsRegistering(false);
+        setUsername('');
+        setPassword('');
+        setEmail('');
     };
 
     const handleLogout = () => {
@@ -50,8 +70,9 @@ const Login = () => {
     return (
         <div className="login-container">
             {!isLoggedIn ? (
-                <form className="login-form" onSubmit={handleLogin}>
-                    <h1>Iniciar sesión</h1>
+                <form className="login-form" onSubmit={isRegistering ? handleRegister : handleLogin}>
+                    <h1>{isRegistering ? 'Crear cuenta' : 'Iniciar sesión'}</h1>
+
                     <input
                         type="text"
                         placeholder="Usuario"
@@ -66,7 +87,19 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    <button type="submit">Entrar</button>
+                    {isRegistering && (
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    )}
+                    <button type="submit">
+                        {isRegistering ? 'Registrarse' : 'Entrar'}
+                    </button>
+
                     <button
                         type="button"
                         className="btn-home"
@@ -74,10 +107,20 @@ const Login = () => {
                     >
                         Volver a Home
                     </button>
+
+                    <button
+                        type="button"
+                        className="btn-home"
+                        onClick={() => setIsRegistering(!isRegistering)}
+                    >
+                        {isRegistering
+                            ? '¿Ya tenés cuenta? Iniciar sesión'
+                            : '¿No tenés cuenta? Registrate'}
+                    </button>
                 </form>
             ) : (
                 <div className="logout-section">
-                    <h2>Ya has iniciado sesión como <strong>{role}</strong></h2>
+                    <h2>Sesión iniciada como <strong>{role}</strong></h2>
                     <button className="btn-logout" onClick={handleLogout}>
                         Cerrar sesión
                     </button>
