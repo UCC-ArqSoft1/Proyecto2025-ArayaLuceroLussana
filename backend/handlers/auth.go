@@ -6,6 +6,7 @@ import (
 	"alua/models"
 	"alua/services"
 	"alua/utils/utils"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -33,6 +34,7 @@ func Register(c *gin.Context) {
 	user.Password = hashedPassword // Reemplaza la contraseña en el modelo con la versión hasheada
 
 	if err := services.CreateUser(&user); err != nil {
+		fmt.Println("Error registering user:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error registering user"})
 		return
 	}

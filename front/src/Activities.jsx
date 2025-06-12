@@ -3,7 +3,7 @@ import "./Activities.css";
 
 const actividadesDataInicial = [
     {
-        id: "surf",
+        id: "1",
         nombre: "Surf",
         descripcion: "Clases para todos los niveles, desde principiantes hasta avanzados.",
         profesor: "Juan Pérez",
@@ -12,7 +12,7 @@ const actividadesDataInicial = [
         foto: "/surf.png",
     },
     {
-        id: "yoga",
+        id: "2",
         nombre: "Yoga",
         descripcion: "Yoga frente al mar para relajarte y mejorar tu flexibilidad.",
         profesor: "María López",
@@ -21,7 +21,7 @@ const actividadesDataInicial = [
         foto: "/yoga.png",
     },
     {
-        id: "skate",
+        id: "3",
         nombre: "Skate",
         descripcion: "Skate para todos, con técnicas y trucos para principiantes y expertos.",
         profesor: "Carlos Gómez",

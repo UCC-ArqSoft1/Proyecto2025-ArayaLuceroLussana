@@ -9,6 +9,8 @@ import (
 	"log"
 	"os"
 
+	"alua/models"
+
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -36,4 +38,10 @@ func InitDB() {
 
 	DB = db
 	fmt.Println("Database connected successfully")
+
+	//Migracion de los modelos a la base de datos
+	err = db.AutoMigrate(&models.User{}, &models.Activity{}, &models.Inscription{})
+	if err != nil {
+		log.Fatalf("Failed to auto-migrate models: %v", err)
+	}
 }
