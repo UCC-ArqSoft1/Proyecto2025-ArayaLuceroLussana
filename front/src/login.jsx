@@ -18,44 +18,62 @@ const Login = () => {
         setRole(storedRole);
     }, []);
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
 
-        const storedUser = localStorage.getItem('newUser');
-        const storedPass = localStorage.getItem('newPass');
+        try {
+            const response = await fetch('http://localhost:5174/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
 
-        if (username === 'admin' && password === 'admin') {
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error || 'Error en login');
+            }
+
+            const data = await response.json();
+
             localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('role', 'admin');
+            localStorage.setItem('role', data.role || 'user'); // Ajustar según lo que devuelva tu backend
+
             setIsLoggedIn(true);
-            setRole('admin');
-            alert('Login exitoso como administrador');
+            setRole(data.role || 'user');
+            alert('Login exitoso');
             navigate('/');
-        } else if (
-            (username === 'user' && password === 'user') ||
-            (username === storedUser && password === storedPass)
-        ) {
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('role', 'user');
-            setIsLoggedIn(true);
-            setRole('user');
-            alert('Login exitoso como usuario');
-            navigate('/');
-        } else {
-            alert('Usuario o contraseña incorrectos');
+        } catch (error) {
+            alert(`Error al iniciar sesión: ${error.message}`);
         }
     };
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
-        localStorage.setItem('newUser', username);
-        localStorage.setItem('newPass', password);
-        localStorage.setItem('newEmail', email);
-        alert('Usuario registrado con éxito');
-        setIsRegistering(false);
-        setUsername('');
-        setPassword('');
-        setEmail('');
+
+        try {
+            const response = await fetch('http://localhost:5174/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password, email }),
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error || 'Error en registro');
+            }
+
+            alert('Usuario registrado con éxito');
+            setIsRegistering(false);
+            setUsername('');
+            setPassword('');
+            setEmail('');
+        } catch (error) {
+            alert(`Error al registrarse: ${error.message}`);
+        }
     };
 
     const handleLogout = () => {
