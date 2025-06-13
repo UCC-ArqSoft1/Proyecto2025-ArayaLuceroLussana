@@ -287,12 +287,33 @@
     font-weight: 700;
 }
 
-.mis-actividades-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
-    margin-bottom: 30px;
+.mis-actividades-section {
+    background-color: #f9f9f9;
+    font-size: 0.9rem;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    /* centrado horizontal + espacio abajo */
+    max-width: 400px;
+    width: 100%;
 }
+
+
+
+.mis-actividades-section h4 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.mis-inscripciones {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin: 0;
+}
+
+
 
 
 .btn-dar-baja-inline {
@@ -387,4 +408,35 @@
     margin-left: auto;
     /* para que se alinee a la derecha si está en un flex container */
     display: block;
+}
+
+/* === Estilos para modo edición: inputs y textarea sin bordes ni fondo === */
+
+.formulario-edicion input,
+.formulario-edicion textarea {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    font-size: inherit !important;
+    font-family: inherit !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    resize: none;
+    /* para textarea */
+    outline: none !important;
+    width: 100%;
+    cursor: text;
+}
+
+.formulario-edicion input[readonly],
+.formulario-edicion textarea[readonly] {
+    cursor: default;
+    user-select: none;
+}
+
+.formulario-edicion textarea {
+    overflow: hidden;
+    min-height: 1.2em;
+    line-height: 1.2em;
 }

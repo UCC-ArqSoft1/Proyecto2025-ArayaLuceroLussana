@@ -6,8 +6,10 @@ const Login = () => {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [role, setRole] = useState('');
+    const [isRegistering, setIsRegistering] = useState(false);
 
     // Al cargar el componente, recuperamos el estado de sesión
     useEffect(() => {
@@ -62,6 +64,18 @@ const Login = () => {
         }
     };
 
+    const handleRegister = (e) => {
+        e.preventDefault();
+        localStorage.setItem('newUser', username);
+        localStorage.setItem('newPass', password);
+        localStorage.setItem('newEmail', email);
+        alert('Usuario registrado con éxito');
+        setIsRegistering(false);
+        setUsername('');
+        setPassword('');
+        setEmail('');
+    };
+
     const handleLogout = () => {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('role');
@@ -75,8 +89,9 @@ const Login = () => {
     return (
         <div className="login-container">
             {!isLoggedIn ? (
-                <form className="login-form" onSubmit={handleLogin}>
-                    <h1>Iniciar sesión</h1>
+                <form className="login-form" onSubmit={isRegistering ? handleRegister : handleLogin}>
+                    <h1>{isRegistering ? 'Crear cuenta' : 'Iniciar sesión'}</h1>
+
                     <input
                         type="text"
                         placeholder="Usuario (email)"
@@ -91,7 +106,19 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    <button type="submit">Entrar</button>
+                    {isRegistering && (
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    )}
+                    <button type="submit">
+                        {isRegistering ? 'Registrarse' : 'Entrar'}
+                    </button>
+
                     <button
                         type="button"
                         className="btn-home"
@@ -99,10 +126,20 @@ const Login = () => {
                     >
                         Volver a Home
                     </button>
+
+                    <button
+                        type="button"
+                        className="btn-home"
+                        onClick={() => setIsRegistering(!isRegistering)}
+                    >
+                        {isRegistering
+                            ? '¿Ya tenés cuenta? Iniciar sesión'
+                            : '¿No tenés cuenta? Registrate'}
+                    </button>
                 </form>
             ) : (
                 <div className="logout-section">
-                    <h2>Ya has iniciado sesión como <strong>{role}</strong></h2>
+                    <h2>Sesión iniciada como <strong>{role}</strong></h2>
                     <button className="btn-logout" onClick={handleLogout}>
                         Cerrar sesión
                     </button>
