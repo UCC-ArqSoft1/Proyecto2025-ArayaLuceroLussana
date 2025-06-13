@@ -23,7 +23,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		tokenStr := strings.TrimPrefix(tokenString, "Token ") //elimina el prefijo "Token " para obtener solo el jwt real (ej: "token abc123" -> "abc123")
+		tokenStr := strings.TrimPrefix(tokenString, "Bearer ") //elimina el prefijo "Token " para obtener solo el jwt real (ej: "token abc123" -> "abc123")
 		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil //intenta parsear y verificar el token usando la clave secreta
 		})
@@ -51,13 +51,15 @@ func AuthMiddleware() gin.HandlerFunc {
 // permitir solo usuarios con rol "admin"
 func AdminMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		rol, exists := c.Get("rol") // recupera el rol guardado por authmiddleware
-		if !exists || rol != "admin" {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Acceso denegado"}) //si no tiene admin devuelve 403 (prohibido)
+		rol, exists := c.Get("rol")
+		rolStr, ok := rol.(string) // asegura que sea string
+
+		if !exists || !ok || (rolStr != "admin" && rolStr != "Admin") {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Acceso denegado"})
 			c.Abort()
 			return
 		}
 
-		c.Next() // Si es admin, continúa al handler
+		c.Next()
 	}
 }

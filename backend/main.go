@@ -1,32 +1,38 @@
-// punto de entrada de la aplicación
 package main
 
 import (
 	"alua/config"
 	"alua/handlers"
 	"alua/middleware"
+	"log"
+	"time"
 
 	"github.com/gin-contrib/cors"
-
-	"log"
-
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	config.InitDB()    // Inicializar la conexión a la base de datos (primero al iniciar programa)
-	r := gin.Default() // Crear una nueva instancia del framework web gin
+	config.InitDB()
 
-	r.Use(cors.Default()) //Esto habilita CORS con configuración por defecto
+	r := gin.Default()
 
-	//rutas publicas (disponibles sin autenticación)
+	// Configuración personalizada de CORS
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	// Rutas públicas
 	r.POST("/register", handlers.Register)
 	r.POST("/login", handlers.Login)
 	r.GET("/activities", handlers.ShowActivities)
 	r.GET("/activities/:id", handlers.GetActivityByID)
 
-	// Rutas para administradores
+	// Rutas de administrador
 	admin := r.Group("/admin")
 	admin.Use(middleware.AuthMiddleware(), middleware.AdminMiddleware())
 	{
@@ -35,7 +41,7 @@ func main() {
 		admin.DELETE("/activity/:id", handlers.DeleteActivity)
 	}
 
-	// Routes for authenticated users
+	// Rutas para socios
 	socio := r.Group("/socio")
 	socio.Use(middleware.AuthMiddleware())
 	{
@@ -45,7 +51,6 @@ func main() {
 		socio.DELETE("/inscription/:id", handlers.DeleteInscription)
 	}
 
-	// Iniciar el servidor en el puerto 8080
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal("Error al iniciar el servidor:", err)
 	}
