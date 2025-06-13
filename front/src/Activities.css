@@ -19,27 +19,47 @@
     font-weight: 700;
 }
 
-.input-busqueda {
+.controles-actividades {
     display: flex;
-    justify-content: center;
-    margin-bottom: 25px;
-    gap: 10px;
+    /* Make it a flex container */
     flex-wrap: wrap;
+    /* Allow items to wrap to the next line on smaller screens */
+    gap: 15px;
+    /* Space between the search input and buttons */
+    margin-bottom: 25px;
+    align-items: center;
+    /* Vertically align items in the middle */
+    justify-content: center;
+    /* Horizontally center the items */
 }
 
-.input-busqueda input {
-    padding: 8px 12px;
-    font-size: 1rem;
+/* Styles for the search input itself */
+.search-input {
+    /* <-- TARGETING THE NEW CLASS NAME HERE! */
+    flex-grow: 1;
+    /* This is key: allows the input to grow and take up available space */
+    padding: 10px 15px;
+    /* Slightly more padding for a larger appearance */
+    font-size: 1.1rem;
+    /* Slightly larger font size */
     border: 2px solid #90e0ef;
-    border-radius: 6px;
+    border-radius: 8px;
+    /* Slightly more rounded corners */
     outline: none;
-    transition: border-color 0.3s ease;
-    min-width: 180px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    max-width: 100%;
+    /* Ensures it doesn't overflow its parent */
+    min-width: 280px;
+    /* Adjust this value as needed for your desired minimum length */
 }
 
-.input-busqueda input:focus {
+.search-input:focus {
     border-color: #0077b6;
+    box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.2);
 }
+
+
+
 
 .btn-agregar {
     background-color: #00b4d8;
@@ -307,36 +327,23 @@
     font-weight: 600;
 }
 
-.mis-inscripciones {
-    list-style-type: disc;
-    padding-left: 20px;
-    margin: 0;
+.mis-inscripciones li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 35px;
+    /* espacio para que el botón no esté tan pegado */
+    margin-bottom: 10px;
+    position: relative;
+    /* ya no necesario si sacás el absolute */
 }
-
-
-
 
 .btn-dar-baja-inline {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background-color: #d90429;
-    color: rgb(95, 120, 90);
-    border: none;
-    border-radius: 50%;
-    /* Para hacerlo redondo */
-    width: 25px;
-    height: 25px;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    padding: 0;
-    line-height: 1;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    position: static;
+    /* O directamente eliminá 'position' */
+    margin-left: 10px;
 }
+
 
 .btn-dar-baja-inline:hover {
     background-color: #a1031f;

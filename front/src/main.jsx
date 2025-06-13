@@ -5,7 +5,7 @@ import './index.css';
 import Login from './login.jsx';
 import Home from './Home.jsx';
 import Activities from './Activities.jsx';
-import Act from './ActGym.jsx';
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -14,7 +14,6 @@ createRoot(document.getElementById('root')).render(
         <Route path="/" element={<Home />} />              {/* Ruta principal */}
         <Route path="/login" element={<Login />} />        {/* rutas en minúscula por convención */}
         <Route path="/activities" element={<Activities />} />
-        <Route path="/ActGym" element={<Act />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

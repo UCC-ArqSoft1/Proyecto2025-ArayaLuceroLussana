@@ -1,33 +1,52 @@
 import React, { useState, useEffect } from "react";
 import "./Activities.css";
 
+const actividadesDataInicial = [
+    {
+        id: "1",
+        nombre: "Surf",
+        descripcion: "Clases para todos los niveles, desde principiantes hasta avanzados.",
+        profesor: "Juan Pérez",
+        horarios: "Lunes - Miércoles - Viernes 8:00 - 10:00",
+        cupos: 15,
+        foto: "/surf.png",
+    },
+    {
+        id: "2",
+        nombre: "Yoga",
+        descripcion: "Yoga frente al mar para relajarte y mejorar tu flexibilidad.",
+        profesor: "María López",
+        horarios: "Martes - Jueves 18:00 - 19:30",
+        cupos: 20,
+        foto: "/yoga.png",
+    },
+    {
+        id: "3",
+        nombre: "Skate",
+        descripcion: "Skate para todos, con técnicas y trucos para principiantes y expertos.",
+        profesor: "Carlos Gómez",
+        horarios: "Sábados 10:00 - 12:00",
+        cupos: 12,
+        foto: "/skate.png",
+    },
+];
+
 const Activities = () => {
-    const [actividades, setActividades] = useState([
-        {
-            id: "1",
-            nombre: "Yoga",
-            descripcion: "Clase de Yoga relajante",
-            profesor: "Ana",
-            dia: "Lunes",
-            hora: "10:00",
-            duration: 60,
-            category: "Fitness",
-            cupos: 15,
-            state: "Activo",
-        },
-    ]);
+    const [actividades, setActividades] = useState(actividadesDataInicial);
     const [actividadSeleccionada, setActividadSeleccionada] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [nuevaActividad, setNuevaActividad] = useState({
+        id: "",
         nombre: "",
         descripcion: "",
         profesor: "",
-        dia: "",
-        hora: "",
-        duration: "",
-        category: "",
-        cupos: ""
+        horarios: "",
+        cupos: "",
+        foto: "",
     });
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [editandoActividad, setEditandoActividad] = useState(null);
 
     const [busqueda, setBusqueda] = useState("");
     const [inscripciones, setInscripciones] = useState(() => {
@@ -35,33 +54,50 @@ const Activities = () => {
         return savedInscripciones ? JSON.parse(savedInscripciones) : [];
     });
 
+    // Guarda las inscripciones en localStorage cada vez que cambian
     useEffect(() => {
         localStorage.setItem("userInscripciones", JSON.stringify(inscripciones));
     }, [inscripciones]);
 
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    const role = localStorage.getItem("role") || "";
 
+    useEffect(() => {
+        if (actividadSeleccionada && !isEditing) {
+            setEditandoActividad({ ...actividadSeleccionada });
+        } else if (!actividadSeleccionada) {
+            setEditandoActividad(null);
+            setIsEditing(false); // Resetea el estado de edición si no hay actividad seleccionada
+        }
+    }, [actividadSeleccionada]);
+
+
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    const role = (localStorage.getItem("role") || "").toLowerCase(); // Normaliza el rol a minúsculas
+
+    // Función para cerrar sesión
     const handleLogout = () => {
         localStorage.removeItem("isLoggedIn");
         localStorage.removeItem("role");
         localStorage.removeItem("userInscripciones");
-        window.location.reload();
+        window.location.reload(); // Recarga la página para aplicar los cambios
     };
 
     const abrirDetalle = (actividad) => {
         setActividadSeleccionada(actividad);
+        setEditandoActividad({ ...actividad }); // Inicializa el estado de edición con la actividad actual
         setShowForm(false);
+        setIsEditing(false); // Abre el detalle en modo de vista por defecto
     };
 
     const cerrarDetalle = () => {
         setActividadSeleccionada(null);
+        setEditandoActividad(null); // Limpia el estado de edición
         setShowForm(false);
+        setIsEditing(false); // Asegura que el modo edición esté apagado
     };
 
     const handleToggleInscription = (actividadId, nombreActividad) => {
         if (inscripciones.includes(actividadId)) {
-            if (window.confirm(`¿Estás seguro de que deseas dar de baja de ${nombreActividad}?`)) {
+            if (window.confirm(`¿Estás seguro de que quieres dar de baja de ${nombreActividad}?`)) {
                 setInscripciones(inscripciones.filter((id) => id !== actividadId));
                 alert(`Has dado de baja de: ${nombreActividad}`);
             }
@@ -72,118 +108,55 @@ const Activities = () => {
     };
 
     const handleEliminarActividad = (id) => {
-        if (window.confirm("¿Seguro que deseas eliminar esta actividad?")) {
-            setActividades(actividades.filter((act) => act.id !== id));
-            setInscripciones(inscripciones.filter((inscId) => inscId !== id));
-            cerrarDetalle();
-        }
+        alert("La función de eliminar actividad no está disponible aún.");
     };
 
+    // Maneja los cambios en los inputs del formulario de AGREGAR nueva actividad
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setNuevaActividad((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setNuevaActividad((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleAgregarActividad = async (e) => {
-        e.preventDefault();
-
-        if (!nuevaActividad.nombre.trim()) {
-            alert("El nombre de la actividad es obligatorio.");
-            return;
-        }
-        if (!nuevaActividad.dia.trim()) {
-            alert("El día es obligatorio.");
-            return;
-        }
-        if (!nuevaActividad.hora.trim()) {
-            alert("La hora es obligatoria.");
-            return;
-        }
-
-        const token = localStorage.getItem("token");
-        if (!token) {
-            alert("No estás autenticado. Por favor inicia sesión.");
-            return;
-        }
-
-        try {
-            const activityToSave = {
-                title: nuevaActividad.nombre,
-                description: nuevaActividad.descripcion,
-                day: nuevaActividad.dia,
-                time: nuevaActividad.hora,
-                duration: Number(nuevaActividad.duration) || 0,
-                category: nuevaActividad.category || "General",
-                state: "Activo",
-                instructor: nuevaActividad.profesor,
-                cupo: Number(nuevaActividad.cupos) || 0,
-            };
-
-            const response = await fetch("http://localhost:8080/admin/activity", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(activityToSave),
-            });
-
-            if (response.ok) {
-                alert("Actividad creada con éxito.");
-
-                setActividades((prev) => [
-                    ...prev,
-                    {
-                        id: crypto.randomUUID(),
-                        nombre: nuevaActividad.nombre,
-                        descripcion: nuevaActividad.descripcion,
-                        profesor: nuevaActividad.profesor,
-                        dia: nuevaActividad.dia,
-                        hora: nuevaActividad.hora,
-                        duration: Number(nuevaActividad.duration),
-                        category: nuevaActividad.category || "General",
-                        cupos: Number(nuevaActividad.cupos),
-                        state: "Activo",
-                    },
-                ]);
-
-                setNuevaActividad({
-                    nombre: "",
-                    descripcion: "",
-                    profesor: "",
-                    dia: "",
-                    hora: "",
-                    duration: "",
-                    category: "",
-                    cupos: ""
-                });
-
-                setShowForm(false);
-            } else {
-                const error = await response.json();
-                console.error(error);
-                alert("Error al crear la actividad.");
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Error al crear la actividad.");
-        }
+    // Maneja los cambios en los inputs del formulario de EDICIÓN de actividad
+    const handleEditInputChange = (e) => {
+        const { name, value } = e.target;
+        setEditandoActividad((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleGuardarEdicion = () => {
+        // Alerta de función no disponible para administrador
+        alert("La función de guardar edición no está disponible aún.");
+    };
+
+    const handleCancelarEdicion = () => {
+        // Alerta de función no disponible para administrador
+        alert("La función de cancelar edición no está disponible aún.");
+        setIsEditing(false); // Sale del modo edición
+        setEditandoActividad({ ...actividadSeleccionada }); // Restaura la actividad original seleccionada
+    };
+
+    const handleAgregarActividad = (e) => {
+        e.preventDefault(); // Previene el comportamiento por defecto del formulario
+        // Alerta de función no disponible para administrador
+        alert("La función de agregar actividad no está disponible aún.");
+    };
 
     const handleBusquedaChange = (e) => {
         setBusqueda(e.target.value);
     };
 
+    // Lógica de filtrado de actividades
     const actividadesFiltradasPorBusqueda = actividades.filter((act) => {
         const textoBusqueda = busqueda.toLowerCase();
-        if (textoBusqueda.length === 0) return true;
+        if (textoBusqueda.length === 0) return true; // Si la búsqueda está vacía, muestra todas
+
+        // Filtra por las primeras 3 letras del nombre o del día en horarios
+        const nombreSubstr = act.nombre.toLowerCase().substring(0, 3);
+        const horariosSubstr = act.horarios.toLowerCase().substring(0, 3);
+
         return (
-            act.nombre.toLowerCase().startsWith(textoBusqueda) ||
-            act.dia.toLowerCase().startsWith(textoBusqueda)
+            nombreSubstr.startsWith(textoBusqueda) ||
+            horariosSubstr.startsWith(textoBusqueda)
         );
     });
 
@@ -201,28 +174,40 @@ const Activities = () => {
                     placeholder="Buscar actividad por nombre o día..."
                     value={busqueda}
                     onChange={handleBusquedaChange}
-                    className="input-busqueda"
+                    className="search-input"
                     aria-label="Buscar actividades por nombre o día"
                 />
 
-                {isLoggedIn && (
+                {isLoggedIn && ( // Solo muestra "Cerrar Sesión" si isLoggedIn es true
                     <button className="btn-logout" onClick={handleLogout}>
                         Cerrar Sesión
                     </button>
                 )}
 
-                {isLoggedIn && role === "Admin" && (
+                {isLoggedIn && role === "admin" && ( // Solo muestra "Agregar Actividad" si es admin
                     <button
                         className="btn-agregar"
-                        onClick={() => setShowForm((prev) => !prev)}
+                        onClick={() => { alert("La función de agregar actividad no está disponible aún."); setShowForm(false); }}
                     >
-                        {showForm ? "Cancelar" : "Agregar Nueva Actividad"}
+                        Agregar Nueva Actividad
                     </button>
                 )}
             </div>
 
-            {showForm && (
-                <form className="formulario-nueva-actividad" onSubmit={handleAgregarActividad}>
+            {/* El formulario para agregar nueva actividad solo se muestra si showForm es true y es admin */}
+            {showForm && isLoggedIn && role === "admin" && (
+                <form
+                    className="formulario-nueva-actividad"
+                    onSubmit={handleAgregarActividad}
+                >
+                    <input
+                        type="text"
+                        name="id"
+                        placeholder="ID única (ej: surf)"
+                        value={nuevaActividad.id}
+                        onChange={handleInputChange}
+                        required
+                    />
                     <input
                         type="text"
                         name="nombre"
@@ -246,27 +231,10 @@ const Activities = () => {
                     />
                     <input
                         type="text"
-                        name="dia"
-                        placeholder="Día (ej: Lunes)"
-                        value={nuevaActividad.dia}
+                        name="horarios"
+                        placeholder="Días / Horarios"
+                        value={nuevaActividad.horarios}
                         onChange={handleInputChange}
-                        required
-                    />
-                    <input
-                        type="time"
-                        name="hora"
-                        placeholder="Hora"
-                        value={nuevaActividad.hora}
-                        onChange={handleInputChange}
-                        required
-                    />
-                    <input
-                        type="number"
-                        name="duration"
-                        placeholder="Duración (minutos)"
-                        value={nuevaActividad.duration}
-                        onChange={handleInputChange}
-                        min={1}
                     />
                     <input
                         type="number"
@@ -274,16 +242,18 @@ const Activities = () => {
                         placeholder="Cupos disponibles"
                         value={nuevaActividad.cupos}
                         onChange={handleInputChange}
-                        min={1}
+                        min={0}
                     />
                     <input
                         type="text"
-                        name="category"
-                        placeholder="Categoría (ej: Fitness, Aire Libre)"
-                        value={nuevaActividad.category}
+                        name="foto"
+                        placeholder="URL de la foto"
+                        value={nuevaActividad.foto}
                         onChange={handleInputChange}
                     />
-                    <button type="submit">Guardar Actividad</button>
+                    <button type="submit" onClick={() => alert("La función de guardar actividad no está disponible aún.")}>
+                        Guardar Actividad
+                    </button>
                 </form>
             )}
 
@@ -310,29 +280,125 @@ const Activities = () => {
 
             {actividadSeleccionada && (
                 <div className="detalle-actividad">
-                    <button className="cerrar" onClick={cerrarDetalle} aria-label="Cerrar detalle">
+                    <button
+                        className="cerrar"
+                        onClick={cerrarDetalle}
+                        aria-label="Cerrar detalle"
+                    >
                         &times;
                     </button>
-                    <h2>{actividadSeleccionada.nombre}</h2>
-                    <div className="detalle-contenido">
-                        <div className="detalle-texto">
-                            <p><strong>Descripción:</strong> {actividadSeleccionada.descripcion}</p>
-                            <p><strong>Profesor:</strong> {actividadSeleccionada.profesor}</p>
-                            <p><strong>Horario:</strong> {actividadSeleccionada.dia} {actividadSeleccionada.hora}</p>
-                            <p><strong>Duración:</strong> {actividadSeleccionada.duration} minutos</p>
-                            <p><strong>Cupos:</strong> {actividadSeleccionada.cupos}</p>
-                            <p><strong>Categoría:</strong> {actividadSeleccionada.category}</p>
-                            <p><strong>Estado:</strong> {actividadSeleccionada.state}</p>
+                    {/* Campos de la actividad (editables o de solo lectura) */}
+                    {isEditing && isLoggedIn && role === "admin" ? ( // Solo editable si es admin y está en modo edición
+                        <input
+                            type="text"
+                            name="nombre"
+                            value={editandoActividad.nombre}
+                            onChange={handleEditInputChange}
+                            className="formulario-edicion-input"
+                        />
+                    ) : (
+                        <h2>{actividadSeleccionada.nombre}</h2>
+                    )}
 
-                            {isLoggedIn && (
+                    <div className="detalle-contenido">
+                        {actividadSeleccionada.foto ? (
+                            <img
+                                src={isEditing && isLoggedIn && role === "admin" ? editandoActividad.foto : actividadSeleccionada.foto}
+                                alt={isEditing && isLoggedIn && role === "admin" ? editandoActividad.nombre : actividadSeleccionada.nombre}
+                                className="foto-actividad"
+                            />
+                        ) : (
+                            <div
+                                className="foto-actividad"
+                                style={{
+                                    backgroundColor: "#ccc",
+                                    width: "200px",
+                                    height: "120px",
+                                    borderRadius: "6px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    color: "#666",
+                                }}
+                            >
+                                Sin imagen
+                            </div>
+                        )}
+                        <div className="detalle-texto">
+                            <p>
+                                <strong>Descripción:</strong>{" "}
+                                {isEditing && isLoggedIn && role === "admin" ? (
+                                    <textarea
+                                        name="descripcion"
+                                        value={editandoActividad.descripcion}
+                                        onChange={handleEditInputChange}
+                                        className="formulario-edicion-input"
+                                    />
+                                ) : (
+                                    actividadSeleccionada.descripcion
+                                )}
+                            </p>
+                            <p>
+                                <strong>Profesor:</strong>{" "}
+                                {isEditing && isLoggedIn && role === "admin" ? (
+                                    <input
+                                        type="text"
+                                        name="profesor"
+                                        value={editandoActividad.profesor}
+                                        onChange={handleEditInputChange}
+                                        className="formulario-edicion-input"
+                                    />
+                                ) : (
+                                    actividadSeleccionada.profesor
+                                )}
+                            </p>
+                            <p>
+                                <strong>Horarios:</strong>{" "}
+                                {isEditing && isLoggedIn && role === "admin" ? (
+                                    <input
+                                        type="text"
+                                        name="horarios"
+                                        value={editandoActividad.horarios}
+                                        onChange={handleEditInputChange}
+                                        className="formulario-edicion-input"
+                                    />
+                                ) : (
+                                    actividadSeleccionada.horarios
+                                )}
+                            </p>
+                            <p>
+                                <strong>Cupos:</strong>{" "}
+                                {isEditing && isLoggedIn && role === "admin" ? (
+                                    <input
+                                        type="number"
+                                        name="cupos"
+                                        value={editandoActividad.cupos}
+                                        onChange={handleEditInputChange}
+                                        min={0}
+                                        className="formulario-edicion-input"
+                                    />
+                                ) : (
+                                    actividadSeleccionada.cupos
+                                )}
+                            </p>
+                            {isEditing && isLoggedIn && role === "admin" && ( // Input de foto solo si es admin y está editando
+                                <p>
+                                    <strong>Foto URL:</strong>{" "}
+                                    <input
+                                        type="text"
+                                        name="foto"
+                                        value={editandoActividad.foto}
+                                        onChange={handleEditInputChange}
+                                        className="formulario-edicion-input"
+                                    />
+                                </p>
+                            )}
+
+                            {/* El botón de inscripción/dar de baja se muestra si isLoggedIn es true y NO estamos editando */}
+                            {isLoggedIn && !isEditing && (
                                 <button
-                                    className="btn-inscripcion"
-                                    onClick={() =>
-                                        handleToggleInscription(
-                                            actividadSeleccionada.id,
-                                            actividadSeleccionada.nombre
-                                        )
-                                    }
+                                    className="btn-inscribir"
+                                    onClick={() => handleToggleInscription(actividadSeleccionada.id, actividadSeleccionada.nombre)}
                                 >
                                     {inscripciones.includes(actividadSeleccionada.id)
                                         ? "Dar de Baja"
@@ -340,31 +406,64 @@ const Activities = () => {
                                 </button>
                             )}
 
-                            {isLoggedIn && role === "Admin" && (
-                                <button
-                                    className="btn-eliminar"
-                                    onClick={() => handleEliminarActividad(actividadSeleccionada.id)}
-                                >
-                                    Eliminar Actividad
-                                </button>
+                            {/* Mostrar botones de admin SOLO si isLoggedIn es true Y el role es "admin" */}
+                            {isLoggedIn && role === "admin" && (
+                                <div className="botones-admin">
+                                    {isEditing ? (
+                                        <>
+                                            <button className="btn-editar" onClick={handleGuardarEdicion}>
+                                                Guardar Cambios
+                                            </button>
+                                            <button className="btn-eliminar" onClick={handleCancelarEdicion}>
+                                                Cancelar Edición
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button className="btn-editar" onClick={() => { setIsEditing(true); alert("La función de editar no está disponible aún."); }}>
+                                                Editar Actividad
+                                            </button>
+                                            <button
+                                                className="btn-eliminar"
+                                                onClick={() => handleEliminarActividad(actividadSeleccionada.id)}
+                                            >
+                                                Eliminar Actividad
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </div>
                 </div>
             )}
 
-            {isLoggedIn && (
+            {isLoggedIn && ( // Mostrar sección de "Mis Actividades Inscritas" solo si isLoggedIn es true
                 <>
-                    <h4>Mis Actividades Inscritas</h4>
-                    {misActividadesInscritas.length > 0 ? (
-                        <ul className="mis-inscripciones">
-                            {misActividadesInscritas.map((act) => (
-                                <li key={act.id}>{act.nombre}</li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>No estás inscripto en ninguna actividad.</p>
-                    )}
+                    <hr className="divider" />
+                    <h4 className="section-title">Mis Actividades Inscritas</h4>
+                    <div className="mis-actividades-section">
+                        {misActividadesInscritas.length > 0 ? (
+                            <ul className="mis-inscripciones">
+                                {misActividadesInscritas.map((act) => (
+                                    <li key={act.id} style={{ position: 'relative' }}>
+                                        {act.nombre}
+                                        {isLoggedIn && ( // El botón de dar de baja inline también requiere isLoggedIn
+                                            <button
+                                                className="btn-dar-baja-inline"
+                                                onClick={() => handleToggleInscription(act.id, act.nombre)}
+                                                aria-label={`Dar de baja de ${act.nombre}`}
+                                            >
+                                                &times;
+                                            </button>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="no-inscripciones-msg">No estás inscripto en ninguna actividad.</p>
+                        )}
+                    </div>
                 </>
             )}
         </section>

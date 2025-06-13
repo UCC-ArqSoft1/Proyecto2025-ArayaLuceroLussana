@@ -48,10 +48,12 @@ const Login = () => {
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
             const payload = JSON.parse(atob(base64));
             const userRole = payload.Rol;
+            const userId = payload.UserID;
 
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('role', userRole);
             localStorage.setItem('token', token);
+            localStorage.setItem('userId', userId);
 
             setIsLoggedIn(true);
             setRole(userRole);
@@ -109,6 +111,8 @@ const Login = () => {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('role');
         localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+
         setIsLoggedIn(false);
         setRole('');
         alert('Sesión cerrada correctamente');

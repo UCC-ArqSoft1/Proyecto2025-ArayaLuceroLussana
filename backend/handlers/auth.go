@@ -18,7 +18,7 @@ var jwtKey = []byte("clave") // Clave secreta para firmar el JWT
 
 // Registro de usuario  (recibe un json con los datos del usuario, hashea la contraseña, llama a crearusuario para guardar en la bd )
 func Register(c *gin.Context) {
-	var user models.User
+	var user models.User //Recibe json con los datos del usuario
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid data"})
 		return
@@ -33,7 +33,7 @@ func Register(c *gin.Context) {
 
 	user.Password = hashedPassword // Reemplaza la contraseña en el modelo con la versión hasheada
 
-	if err := services.CreateUser(&user); err != nil {
+	if err := services.CreateUser(&user); err != nil { //Guarda el usuario en la base de datos a traves del servicio
 		fmt.Println("Error registering user:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error registering user"})
 		return
@@ -59,7 +59,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if !utils.CheckPasswordHash(data.Password, user.Password) {
+	if !utils.CheckPasswordHash(data.Password, user.Password) { //Verifica la contraseña usando la funcion que compara el hash con el input del usuario
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid username or password"})
 		return
 	}
