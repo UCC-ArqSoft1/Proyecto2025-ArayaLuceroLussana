@@ -11,9 +11,9 @@ import (
 
 // ValidateState checks if the provided state is valid.
 var possibleStates = map[string]bool{
-	"active":   true,
-	"inactive": true,
-	"finished": true,
+	"Activo":     true,
+	"Inactivo":   true,
+	"Finalizado": true,
 }
 
 // Get all the activities from the database

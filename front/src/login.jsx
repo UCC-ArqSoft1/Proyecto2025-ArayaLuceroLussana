@@ -1,6 +1,7 @@
 import './Login.css';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Home from './Home'; // Asegúrate de que Home.jsx esté en la misma carpeta o ajusta la ruta
 
 const Login = () => {
     const navigate = useNavigate();
@@ -25,45 +26,43 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:8080/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: email,
-                    password: password,
-                }),
+            const response = await fetch("http://localhost:8080/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const err = await response.json();
-                alert(err.message || 'Error al iniciar sesión');
+                console.error("Error en login:", data.message);
+                alert(data.message || "Error al iniciar sesión");
                 return;
             }
 
-            const data = await response.json();
-            const token = data.Token;
+            const token = data.token;
 
-            // Decodificamos el JWT para obtener el rol del usuario
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const payload = JSON.parse(atob(base64));
-            const userRole = payload.Rol;
-            const userId = payload.UserID;
+            localStorage.setItem("token", token);
+            localStorage.setItem("isLoggedIn", "true");
 
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('role', userRole);
-            localStorage.setItem('token', token);
-            localStorage.setItem('userId', userId);
+            // Opcional: extraer rol desde el JWT si no lo devolvés aparte
+            const payloadBase64 = token.split('.')[1];
+            const decodedPayload = JSON.parse(atob(payloadBase64));
+            const userRole = decodedPayload.rol;
+
+            localStorage.setItem("role", userRole);
 
             setIsLoggedIn(true);
             setRole(userRole);
-            alert(`Login exitoso como ${userRole}`);
-            navigate('/');
+            navigate("/home");
         } catch (error) {
-            console.error('Error en login:', error);
-            alert('Error de conexión con el servidor');
+            console.error("Error en login:", error);
         }
     };
+
+
 
     const handleRegister = async (e) => {
         e.preventDefault();

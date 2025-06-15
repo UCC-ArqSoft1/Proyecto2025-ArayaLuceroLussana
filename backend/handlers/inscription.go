@@ -12,13 +12,11 @@ import (
 )
 
 func CreateInscription(c *gin.Context) {
-	// Obtener ID del usuario desde el token, verifica que el usuarioid de la URL coincida con el id del token
-	tokenUserIDRaw, exists := c.Get("UserID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
+	role := c.GetHeader("Role") //verifica el rol del usuario
+	if role != "socio" {
+		c.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to perform this action"})
 		return
 	}
-	tokenUserID := uint(tokenUserIDRaw.(float64)) // JWT devuelve float64
 
 	//Get userID and activityID from URL parameters
 	userIDStr := c.Param("UserID")
@@ -38,12 +36,6 @@ func CreateInscription(c *gin.Context) {
 	userID := uint(userIDParsed)
 	activityID := uint(activityIDParsed)
 
-	// Verify that the userID from the token matches the userID from the URL
-	if tokenUserID != userID {
-		c.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to perform this action"})
-		return
-	}
-
 	// Call the service to create the inscription
 	err = services.CreateInscription(userID, activityID)
 	if err != nil {
@@ -55,13 +47,11 @@ func CreateInscription(c *gin.Context) {
 }
 
 func EditInscription(c *gin.Context) { //permite cambiar el estado sin eliminar la inscripcion
-	// Obtener el ID del usuario desde el token
-	tokenUserIDRaw, exists := c.Get("UserID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
+	role := c.GetHeader("Role") //verifica el rol del usuario
+	if role != "socio" {
+		c.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to perform this action"})
 		return
 	}
-	tokenUserID := uint(tokenUserIDRaw.(float64))
 
 	// Obtener el ID de la inscripción desde la URL
 	idStr := c.Param("id")
@@ -81,9 +71,9 @@ func EditInscription(c *gin.Context) { //permite cambiar el estado sin eliminar 
 
 	// Validar que el estado sea uno permitido
 	estadoValido := map[string]bool{
-		"Waiting":   true,
-		"Confirmed": true,
-		"Cancelled": true,
+		"Esperando":  true,
+		"Confirmado": true,
+		"Cancelado":  true,
 	}
 	if !estadoValido[nueva.State] {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -93,7 +83,7 @@ func EditInscription(c *gin.Context) { //permite cambiar el estado sin eliminar 
 	}
 
 	// Llamar al servicio para editar la inscripción
-	if err := services.EditInscription(inscripcionID, nueva, tokenUserID); err != nil {
+	if err := services.EditInscription(inscripcionID, nueva, 0); err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"message": err.Error()})
 		return
 	}
@@ -103,12 +93,11 @@ func EditInscription(c *gin.Context) { //permite cambiar el estado sin eliminar 
 
 // maneja la eliminación de una inscripción
 func DeleteInscription(c *gin.Context) {
-	tokenUserIDRaw, exists := c.Get("usuarioID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"mensaje": "Token inválido"})
+	role := c.GetHeader("Role") //verifica el rol del usuario
+	if role != "socio" {
+		c.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to perform this action"})
 		return
 	}
-	tokenUserID := uint(tokenUserIDRaw.(float64))
 
 	// Obtener ID de la inscripción
 	idStr := c.Param("id")
@@ -119,7 +108,7 @@ func DeleteInscription(c *gin.Context) {
 	}
 	inscripcionID := uint(idParsed)
 
-	if err := services.DeleteInscription(inscripcionID, tokenUserID); err != nil {
+	if err := services.DeleteInscription(inscripcionID, 0); err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"mensaje": err.Error()})
 		return
 	}

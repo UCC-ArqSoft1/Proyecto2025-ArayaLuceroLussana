@@ -3,7 +3,6 @@ package main
 import (
 	"alua/config"
 	"alua/handlers"
-	"alua/middleware"
 	"log"
 	"time"
 
@@ -16,7 +15,7 @@ func main() {
 
 	r := gin.Default()
 
-	// Configuración personalizada de CORS
+	// Configuración de CORS para permitir el frontend (React por ejemplo)
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -32,25 +31,26 @@ func main() {
 	r.GET("/activities", handlers.ShowActivities)
 	r.GET("/activities/:id", handlers.GetActivityByID)
 
-	// Rutas de administrador
-	admin := r.Group("/admin")
-	admin.Use(middleware.AuthMiddleware(), middleware.AdminMiddleware())
-	{
-		admin.POST("/activity", handlers.AddActivity)
-		admin.PUT("/activity/:id", handlers.UpdateActivity)
-		admin.DELETE("/activity/:id", handlers.DeleteActivity)
-	}
+	// Rutas de administrador (requiere autenticación y rol admin)
+	// admin := r.Group("/admin")
+	// admin.Use(middleware.AuthMiddleware(), middleware.AdminMiddleware())
+	// {
+	r.POST("/admin/activity", handlers.AddActivity)
+	r.PUT("/admin/activity/:id", handlers.UpdateActivity)
+	r.DELETE("admin/activity/:id", handlers.DeleteActivity)
+	//}
 
-	// Rutas para socios
-	socio := r.Group("/socio")
-	socio.Use(middleware.AuthMiddleware())
-	{
-		socio.POST("/enroll/:UserID/:ActivityID", handlers.CreateInscription)
-		socio.GET("/users/:id/activities", handlers.GetActivitiesByUser)
-		socio.PUT("/inscription/:id", handlers.EditInscription)
-		socio.DELETE("/inscription/:id", handlers.DeleteInscription)
-	}
+	// Rutas para socios autenticados
+	// socio := r.Group("/socio")
+	// socio.Use(middleware.AuthMiddleware())
+	// {
+	r.POST("socio/enroll/:UserID/:ActivityID", handlers.CreateInscription)
+	r.GET("socio/users/:id/activities", handlers.GetActivitiesByUser)
+	r.PUT("socio/inscription/:id", handlers.EditInscription)
+	r.DELETE("socio/inscription/:id", handlers.DeleteInscription)
+	//}
 
+	// Arranca el servidor en el puerto 8080
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal("Error al iniciar el servidor:", err)
 	}

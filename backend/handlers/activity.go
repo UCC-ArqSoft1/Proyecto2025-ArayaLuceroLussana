@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Get all the activities
+// Get all the activities (public)
 func ShowActivities(c *gin.Context) {
 	activities, err := services.ShowActivities()
 	if err != nil {
@@ -21,7 +21,7 @@ func ShowActivities(c *gin.Context) {
 	c.JSON(http.StatusOK, activities)
 }
 
-// tener actividad especifica por ID
+// Get a specific activity by ID (public)
 func GetActivityByID(c *gin.Context) {
 	id := c.Param("id")
 	activity, err := services.GetActivityByID(id)
@@ -34,6 +34,12 @@ func GetActivityByID(c *gin.Context) {
 
 // Add a new activity (admin)
 func AddActivity(c *gin.Context) {
+	role := c.GetHeader("Role") //verifica el rol del usuario
+	if role != "Admin" {
+		c.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to perform this action"})
+		return
+	}
+
 	var activity models.Activity
 	if err := c.ShouldBindJSON(&activity); err != nil { //usa sbj para tranformar el JSON en una estructura actividad
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid data"})
@@ -50,6 +56,12 @@ func AddActivity(c *gin.Context) {
 
 // Update an activity preload (admin)
 func UpdateActivity(c *gin.Context) {
+	role := c.GetHeader("Role") //verifica el rol del usuario
+	if role != "Admin" {
+		c.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to perform this action"})
+		return
+	}
+
 	id := c.Param("id") //recibe el id por URL y los datos nuevos en el body de la petición (json)
 	var data models.Activity
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -65,6 +77,12 @@ func UpdateActivity(c *gin.Context) {
 
 // Delete an activity (admin)
 func DeleteActivity(c *gin.Context) {
+	role := c.GetHeader("Role") //verifica el rol del usuario
+	if role != "Admin" {
+		c.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to perform this action"})
+		return
+	}
+
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 64) //convierte el ID recibido como string a tipo uint
 	if err != nil {

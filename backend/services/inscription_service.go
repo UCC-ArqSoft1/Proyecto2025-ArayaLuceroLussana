@@ -14,24 +14,24 @@ func CreateInscription(UserID uint, ActivityID uint) error {
 	var inscription models.Inscription
 	err := config.DB.Where("UserID = ? AND ActivityID = ?", UserID, ActivityID).First(&inscription).Error
 	if err == nil {
-		return errors.New("User already registered for this activity")
+		return errors.New("user already registered for this activity")
 	}
 
 	// verify if the activity already exists and there's a spot available
 	var activity models.Activity
 	if err := config.DB.First(&activity, ActivityID).Error; err != nil {
-		return errors.New("Activity not found")
+		return errors.New("activity not found")
 	}
 	// Check if the activity is active
-	if activity.State != "active" {
-		return errors.New("Inscription couldn't be done: activity is not active")
+	if activity.State != "Activo" {
+		return errors.New("inscription couldn't be done: activity is not active")
 	}
 
 	//Count the number of registered users for the activity
 	var totalInscription int64
 	config.DB.Model(&models.Inscription{}).Where("ActivityID = ?", ActivityID).Count(&totalInscription)
 	if totalInscription >= int64(activity.Cupo) {
-		return errors.New("There are no spots available for this activity")
+		return errors.New("there are no spots available for this activity")
 	}
 	// Create a new inscription
 	new := models.Inscription{
@@ -50,12 +50,12 @@ func EditInscription(id uint, new models.Inscription, UserID uint) error {
 
 	//Search for the inscription by id
 	if err := config.DB.First(&inscription, id).Error; err != nil {
-		return errors.New("Inscription not found")
+		return errors.New("inscription not found")
 	}
 
 	//Verify that the inscription belongs to the user
 	if inscription.UserID != UserID {
-		return errors.New("No permission to edit this inscription")
+		return errors.New("no permission to edit this inscription")
 	}
 	//Only change the state of the inscription
 	inscription.State = new.State
@@ -69,12 +69,12 @@ func DeleteInscription(id uint, UserID uint) error {
 
 	//Search for the inscription by id
 	if err := config.DB.First(&inscription, id).Error; err != nil {
-		return errors.New("Inscription not found")
+		return errors.New("inscription not found")
 	}
 
 	//Verify that the inscription belongs to the user
 	if inscription.UserID != UserID {
-		return errors.New("No permission to delete this inscription")
+		return errors.New("no permission to delete this inscription")
 	}
 
 	return config.DB.Delete(&inscription).Error

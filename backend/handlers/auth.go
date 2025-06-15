@@ -1,12 +1,9 @@
-//controladores HTTP que reciben las peticiones del cliente, llaman a los servicios correspondientes y devuelven respuestas. Es el punto de entrada del backend a cada funcionalidad.
-
 package handlers
 
 import (
 	"alua/models"
 	"alua/services"
 	"alua/utils/utils"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -14,69 +11,60 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-var jwtKey = []byte("clave") // Clave secreta para firmar el JWT
+var jwtKey = []byte("clave")
 
-// Registro de usuario  (recibe un json con los datos del usuario, hashea la contraseña, llama a crearusuario para guardar en la bd )
 func Register(c *gin.Context) {
-	var user models.User //Recibe json con los datos del usuario
+	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid data"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Datos inválidos"})
 		return
 	}
 
-	// Hash of the password
 	hashedPassword, err := utils.HashPassword(user.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Password hashing failed"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error al hashear la contraseña"})
+		return
+	}
+	user.Password = hashedPassword
+
+	if err := services.CreateUser(&user); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error al registrar el usuario"})
 		return
 	}
 
-	user.Password = hashedPassword // Reemplaza la contraseña en el modelo con la versión hasheada
-
-	if err := services.CreateUser(&user); err != nil { //Guarda el usuario en la base de datos a traves del servicio
-		fmt.Println("Error registering user:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error registering user"})
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Usuario registrado correctamente"})
 }
 
-// Login de usuario (recibe datos, busca al usuario en BD, verifica la contra hasheada y si es correccto genera un JWT )
 func Login(c *gin.Context) {
 	var data struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
 	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid data"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Datos inválidos"})
 		return
 	}
 
 	user, err := services.GetUserByEmail(data.Email)
+	if err != nil || !utils.CheckPasswordHash(data.Password, user.Password) {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Usuario o contraseña incorrectos"})
+		return
+	}
+
+	// Forma más simple de crear token
+	token := jwt.New(jwt.SigningMethodHS256)
+	token.Claims = jwt.MapClaims{
+		"id":    user.ID,
+		"email": user.Email,
+		"rol":   user.Rol,
+		"exp":   time.Now().Add(72 * time.Hour).Unix(),
+	}
+
+	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid username or password"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error al generar el token"})
 		return
 	}
 
-	if !utils.CheckPasswordHash(data.Password, user.Password) { //Verifica la contraseña usando la funcion que compara el hash con el input del usuario
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid username or password"})
-		return
-	}
-
-	// Crea el JWT (token de autorizacion permite que mantenga su sesion sin guardar datos en el servidor)
-	// El token contiene el ID del usuario, su email y rol, y una fecha de expiración
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"UserID":   user.ID,
-		"Username": user.Email,
-		"Rol":      user.Rol,
-		"Exp":      time.Now().Add(time.Hour * 72).Unix(),
-	})
-	tokenString, err := token.SignedString(jwtKey) // Firma el token con la clave secreta
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Token generation failed"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"Token": tokenString})
+	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
