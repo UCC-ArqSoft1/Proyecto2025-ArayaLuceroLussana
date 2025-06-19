@@ -29,7 +29,7 @@ func CreateInscription(UserID uint, ActivityID uint) error {
 
 	//Count the number of registered users for the activity
 	var totalInscription int64
-	config.DB.Model(&models.Inscription{}).Where("ActivityID = ?", ActivityID).Count(&totalInscription)
+	config.DB.Model(&models.Inscription{}).Where("activity_id = ?", ActivityID).Count(&totalInscription)
 	if totalInscription >= int64(activity.Cupo) {
 		return errors.New("there are no spots available for this activity")
 	}
