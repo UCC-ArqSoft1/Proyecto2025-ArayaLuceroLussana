@@ -1,0 +1,14 @@
+//Activacion del servidor del backend a traves de la terminal
+cd ./backend/
+go run ./main.go
+
+//Activacion del frontend
+cd ./front/
+npm run dev
+
+//Creacion de la base de datos, debe estar creada pero el back crea por defecto los campos de users,inscription y activities
+create database if not exists alua;   (nombre de la base de datos)
+show databases;  (muestra todas las bases de datos)
+use alua;    (nombre de la base de datos)
+describe alua;     (muestra la estructura)
+select * from activities;   (muestra lo que se encuentra dentro de la tabla)
