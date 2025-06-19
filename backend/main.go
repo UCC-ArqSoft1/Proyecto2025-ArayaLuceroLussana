@@ -37,17 +37,17 @@ func main() {
 	// {
 	r.POST("/admin/activity", handlers.AddActivity)
 	r.PUT("/admin/activity/:id", handlers.UpdateActivity)
-	r.DELETE("admin/activity/:id", handlers.DeleteActivity)
+	r.DELETE("/admin/activity/:id", handlers.DeleteActivity)
 	//}
 
 	// Rutas para socios autenticados
 	// socio := r.Group("/socio")
 	// socio.Use(middleware.AuthMiddleware())
 	// {
-	r.POST("socio/enroll/:UserID/:ActivityID", handlers.CreateInscription)
-	r.GET("socio/users/:id/activities", handlers.GetActivitiesByUser)
-	r.PUT("socio/inscription/:id", handlers.EditInscription)
-	r.DELETE("socio/inscription/:id", handlers.DeleteInscription)
+	r.POST("/socio/enroll/:UserID/:ActivityID", handlers.CreateInscription)
+	r.GET("/socio/users/:id/activities", handlers.GetActivitiesByUser)
+	r.PUT("/socio/inscription/:id", handlers.EditInscription)
+	r.DELETE("/socio/inscription/:id", handlers.DeleteInscription)
 	//}
 
 	// Arranca el servidor en el puerto 8080

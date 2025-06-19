@@ -3,47 +3,78 @@
 package handlers
 
 import (
+	"alua/config"
 	"alua/models"
 	"alua/services"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 func CreateInscription(c *gin.Context) {
-	role := c.GetHeader("Role") //verifica el rol del usuario
-	if role != "socio" {
-		c.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to perform this action"})
-		return
-	}
+	// Limpiar los parámetros
+	activityParam := strings.TrimSpace(c.Param("ActivityID"))
+	userParam := strings.TrimSpace(c.Param("UserID"))
 
-	//Get userID and activityID from URL parameters
-	userIDStr := c.Param("UserID")
-	activityIDStr := c.Param("ActivityID")
-
-	userIDParsed, err := strconv.ParseUint(userIDStr, 10, 64)
+	// Convertir a int
+	activityID, err := strconv.Atoi(activityParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid ID"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message":  "Invalid Activity ID",
+			"received": activityParam,
+		})
 		return
 	}
-	activityIDParsed, err := strconv.ParseUint(activityIDStr, 10, 64)
+
+	userID, err := strconv.Atoi(userParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid ID"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message":  "Invalid User ID",
+			"received": userParam,
+		})
 		return
 	}
 
-	userID := uint(userIDParsed)
-	activityID := uint(activityIDParsed)
-
-	// Call the service to create the inscription
-	err = services.CreateInscription(userID, activityID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+	// Verificar que la actividad existe
+	var activity models.Activity
+	if err := config.DB.First(&activity, activityID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Activity not found",
+			"id":      activityID,
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Inscription created successfully"})
+	// Verificar que el usuario existe
+	var user models.User
+	if err := config.DB.First(&user, userID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "User not found",
+			"id":      userID,
+		})
+		return
+	}
+
+	// Crear inscripción
+	inscription := models.Inscription{
+		UserID:     uint(userID),
+		ActivityID: uint(activityID),
+	}
+
+	if err := config.DB.Create(&inscription).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to create inscription",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message":     "Inscription created successfully",
+		"inscription": inscription,
+	})
 }
 
 func EditInscription(c *gin.Context) { //permite cambiar el estado sin eliminar la inscripcion
