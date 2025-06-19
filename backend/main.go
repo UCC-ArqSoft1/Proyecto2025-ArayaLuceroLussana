@@ -47,7 +47,7 @@ func main() {
 	r.POST("/socio/enroll/:UserID/:ActivityID", handlers.CreateInscription)
 	r.GET("/socio/users/:id/activities", handlers.GetActivitiesByUser)
 	r.PUT("/socio/inscription/:id", handlers.EditInscription)
-	r.DELETE("/socio/inscription/:id", handlers.DeleteInscription)
+	r.DELETE("/socio/inscription/:id/:UserID", handlers.DeleteInscription)
 	//}
 
 	// Arranca el servidor en el puerto 8080

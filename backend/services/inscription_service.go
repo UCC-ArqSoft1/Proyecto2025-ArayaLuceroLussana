@@ -11,8 +11,8 @@ import (
 func CreateInscription(UserID uint, ActivityID uint) error {
 
 	// Verify if the user is already registered for the activity
-	var inscription models.Inscription
-	err := config.DB.Where("UserID = ? AND ActivityID = ?", UserID, ActivityID).First(&inscription).Error
+	var existing models.Inscription
+	err := config.DB.Where("user_id = ? AND activity_id = ?", UserID, ActivityID).First(&existing).Error
 	if err == nil {
 		return errors.New("user already registered for this activity")
 	}
@@ -64,16 +64,16 @@ func EditInscription(id uint, new models.Inscription, UserID uint) error {
 }
 
 // Delete an inscription
-func DeleteInscription(id uint, UserID uint) error {
+func DeleteInscription(id uint, userID uint) error {
 	var inscription models.Inscription
 
-	//Search for the inscription by id
+	// Buscar la inscripción por id
 	if err := config.DB.First(&inscription, id).Error; err != nil {
 		return errors.New("inscription not found")
 	}
 
-	//Verify that the inscription belongs to the user
-	if inscription.UserID != UserID {
+	// Verificar que la inscripción pertenece al usuario que la quiere borrar
+	if inscription.UserID != userID {
 		return errors.New("no permission to delete this inscription")
 	}
 

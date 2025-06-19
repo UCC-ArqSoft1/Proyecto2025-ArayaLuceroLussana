@@ -1,7 +1,8 @@
 package handlers
 
 import (
-	"alua/services"
+	"alua/config"
+	"alua/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,17 +10,25 @@ import (
 
 // Get all activities for a user
 func GetActivitiesByUser(c *gin.Context) {
-	role := c.GetHeader("Role") //verifica el rol del usuario
+	role := c.GetHeader("Role")
 	if role != "socio" {
 		c.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to perform this action"})
 		return
 	}
 
-	id := c.Param("id")
-	activity, err := services.GetActivityByID(id)
+	userID := c.Param("id")
+
+	var activities []models.Activity
+
+	err := config.DB.
+		Joins("JOIN inscriptions ON inscriptions.activity_id = activities.id").
+		Where("inscriptions.user_id = ?", userID).
+		Find(&activities).Error
+
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting the activities for the user"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting activities for user", "error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, activity)
+
+	c.JSON(http.StatusOK, activities)
 }

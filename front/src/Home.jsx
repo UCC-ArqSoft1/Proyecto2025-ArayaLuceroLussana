@@ -7,17 +7,16 @@ const Home = () => {
     const actividadesRef = useRef();
     const navigate = useNavigate();
     const [mostrarActividades, setMostrarActividades] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const loggedInStatus = localStorage.getItem("isLoggedIn");
+        setIsLoggedIn(loggedInStatus === "true");
+    }, []);
 
     const scrollToActividades = () => {
         setMostrarActividades(true);
     };
-
-    // Cuando mostrarActividades cambia a true, hacemos scroll suavemente
-    useEffect(() => {
-        if (mostrarActividades && actividadesRef.current) {
-            actividadesRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-    }, [mostrarActividades]);
 
     return (
         <div className="body-home">
@@ -26,11 +25,12 @@ const Home = () => {
                 <h2 className="frase">Desafía tus límites, siente la libertad</h2>
                 <div className="botones">
                     <button onClick={scrollToActividades}>Actividades</button>
-                    <button onClick={() => navigate("/login")}>Iniciar sesión</button>
+                    <button onClick={() => navigate("/login")}>
+                        {isLoggedIn ? "Cerrar sesión" : "Iniciar sesión"}
+                    </button>
                 </div>
             </section>
 
-            {/* Solo renderizamos Activities si mostrarActividades es true */}
             {mostrarActividades && (
                 <div ref={actividadesRef}>
                     <Activities />
