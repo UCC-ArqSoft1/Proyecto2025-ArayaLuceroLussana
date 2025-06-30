@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Activities from "./Activities";
-import "./Home.css";
+import "@styles/Home.css";
 
 const Home = () => {
     const actividadesRef = useRef();
