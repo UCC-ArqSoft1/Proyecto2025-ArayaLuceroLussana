@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./Activities.css";
+import "@styles/Activities.css";
 
 const actividadesDataInicial = [
     {
