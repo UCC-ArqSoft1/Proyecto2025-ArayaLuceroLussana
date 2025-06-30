@@ -1,0 +1,278 @@
+{
+	"info": {
+		"_postman_id": "d893575f-d78b-425d-bc73-2ee45f922e04",
+		"name": "ProyectoSoftware",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44440038",
+		"_collection_link": "https://mariano-1695853.postman.co/workspace/Mariano's-Workspace~624270bf-9ce5-4ab7-8604-0e4b10bd513b/collection/44440038-d893575f-d78b-425d-bc73-2ee45f922e04?action=share&source=collection_link&creator=44440038"
+	},
+	"item": [
+		{
+			"name": "Registro de usuarios",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Gabriela\",\r\n  \"lastName\": \"Gomez\",\r\n  \"DNI\": 22033525,\r\n  \"email\": \"gago_71@hotmail.com\",\r\n  \"password\": \"dionisio1992\",\r\n  \"rol\": \"Admin\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post de Login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"lzlucero@gmail.com\",\r\n  \"password\": \"luzrockstar\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cargar una actividad siendo Admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBlYXJhODIzQGhvdG1haWwuY29tIiwiZXhwIjoxNzUwMjAwODQ1LCJpZCI6MTMsInJvbCI6IlNvY2lvIn0.iVST5s8MY5jEFTu8pZYRfYhkTgY5OCxOBMCfbQRi0D0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Role",
+						"value": "Admin",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"title\":\"Surf\"\r\n\"description\":\"Clases para tolos los niveles\",\r\n\"day\":\"Miércoles\",\r\n\"duration\":60,\r\n\"category\":\"Deporte Extremo\"\r\n\"state\":\"Activo\",\r\n\"instructor\":\"Juan Perez\",\r\n\"cupo\":15,\r\n}\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/admin/activity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"admin",
+						"activity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Muestra todas las actividades",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/activities",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"activities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Muestra actividad por ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/activities/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"activities",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Eliminar actividad por ID",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Role",
+						"value": "Admin",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/admin/activity/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"admin",
+						"activity",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post de Inscripcion",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Role",
+						"value": "socio",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/socio/enroll/1/1\n",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"socio",
+						"enroll",
+						"1",
+						"1\n"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get de las actividades que esta inscripto el usuario",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Role",
+						"value": "socio",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/socio/users/1/activities",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"socio",
+						"users",
+						"1",
+						"activities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete de la inscripcion",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Role",
+						"value": "socio",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/socio/inscription/1/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"socio",
+						"inscription",
+						"1",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
