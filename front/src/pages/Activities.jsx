@@ -124,12 +124,16 @@ const Activities = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Role: localStorage.getItem("role") || "Admin",
                 },
                 body: JSON.stringify(actividadFormateada),
             });
 
+            // Si hay error, intento mostrar el mensaje del backend
             if (!response.ok) {
-                throw new Error("Error al crear la actividad");
+                const errorData = await response.json();
+                const msg = errorData.message || "Error al crear la actividad";
+                throw new Error(msg);
             }
 
             const nueva = await response.json();
@@ -150,11 +154,9 @@ const Activities = () => {
             alert("Actividad agregada con éxito.");
         } catch (error) {
             console.error("Error:", error);
-            alert("No se pudo agregar la actividad.");
+            alert("No se pudo agregar la actividad: " + error.message);
         }
     };
-
-
 
     return (
         <section className="actividades">

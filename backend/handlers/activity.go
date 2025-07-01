@@ -51,7 +51,7 @@ func AddActivity(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Activity created successfully"})
+	c.JSON(http.StatusCreated, activity)
 }
 
 // Update an activity preload (admin)
