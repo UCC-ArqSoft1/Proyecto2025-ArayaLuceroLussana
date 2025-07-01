@@ -1,0 +1,21 @@
+services:
+  db:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Dionisio1992
+      MYSQL_DATABASE: alua
+    ports:
+      - "3306:3306"
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    restart: always
+    environment:
+      DB_USER: root
+      DB_PASSWORD: Dionisio1992
+      DB_HOST: localhost
+      DB_PORT: 3306
+      DB_NAME: alua
