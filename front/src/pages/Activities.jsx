@@ -20,11 +20,13 @@ const Activities = () => {
     const [editandoActividad, setEditandoActividad] = useState(null);
 
     const [busqueda, setBusqueda] = useState("");
-    const [inscripciones, setInscripciones] = useState(() => {
-        const savedInscripciones = localStorage.getItem("userInscripciones");
-        return savedInscripciones ? JSON.parse(savedInscripciones) : [];
-    });
+    const [inscripciones, setInscripciones] = useState([{}]);
 
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    const role = (localStorage.getItem("role") || "").toLowerCase();
+    const userId = localStorage.getItem("userId");
+
+    // Solo carga todas las actividades, sin filtrar por usuario
     useEffect(() => {
         fetch("http://localhost:8080/activities")
             .then((res) => res.json())
@@ -36,10 +38,6 @@ const Activities = () => {
     }, []);
 
     useEffect(() => {
-        localStorage.setItem("userInscripciones", JSON.stringify(inscripciones));
-    }, [inscripciones]);
-
-    useEffect(() => {
         if (actividadSeleccionada && !isEditing) {
             setEditandoActividad({ ...actividadSeleccionada });
         } else if (!actividadSeleccionada) {
@@ -48,8 +46,52 @@ const Activities = () => {
         }
     }, [actividadSeleccionada]);
 
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    const role = (localStorage.getItem("role") || "").toLowerCase();
+    const handleToggleInscription = async (actividadId, nombreActividad) => {
+        const userId = localStorage.getItem("userId");
+
+        if (!userId) {
+            alert("Usuario no identificado. Por favor inicia sesión.");
+            return;
+        }
+
+        try {
+            if (inscripciones.includes(actividadId)) {
+                if (window.confirm(`¿Dar de baja de ${nombreActividad}?`)) {
+                    const res = await fetch(`http://localhost:8080/socio/inscription/${actividadId}/${userId}`, {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    });
+                    if (!res.ok) throw new Error("Error al dar de baja");
+
+                    setInscripciones(inscripciones.filter((id) => id !== actividadId));
+                    alert(`Baja realizada: ${nombreActividad}`);
+                }
+            } else {
+                const res = await fetch(`http://localhost:8080/socio/enroll/${userId}/${actividadId}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    body: JSON.stringify({ actividadId, userId }),
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    throw new Error(errorData.message || "Error al inscribir");
+                }
+
+                setInscripciones([...inscripciones, actividadId]);
+                alert(`Inscripción exitosa: ${nombreActividad}`);
+            }
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        }
+    };
 
     const handleLogout = () => {
         localStorage.clear();
@@ -68,18 +110,6 @@ const Activities = () => {
         setEditandoActividad(null);
         setShowForm(false);
         setIsEditing(false);
-    };
-
-    const handleToggleInscription = (actividadId, nombreActividad) => {
-        if (inscripciones.includes(actividadId)) {
-            if (window.confirm(`¿Dar de baja de ${nombreActividad}?`)) {
-                setInscripciones(inscripciones.filter((id) => id !== actividadId));
-                alert(`Baja realizada: ${nombreActividad}`);
-            }
-        } else {
-            setInscripciones([...inscripciones, actividadId]);
-            alert(`Inscripción exitosa: ${nombreActividad}`);
-        }
     };
 
     const handleBusquedaChange = (e) => setBusqueda(e.target.value);
@@ -102,7 +132,6 @@ const Activities = () => {
     const handleAgregarActividad = async (e) => {
         e.preventDefault();
 
-        // Validación mínima
         if (!nuevaActividad.title || !nuevaActividad.day || !nuevaActividad.category) {
             alert("Por favor completá los campos obligatorios.");
             return;
@@ -129,7 +158,6 @@ const Activities = () => {
                 body: JSON.stringify(actividadFormateada),
             });
 
-            // Si hay error, intento mostrar el mensaje del backend
             if (!response.ok) {
                 const errorData = await response.json();
                 const msg = errorData.message || "Error al crear la actividad";
@@ -216,8 +244,7 @@ const Activities = () => {
             console.error("Error al eliminar:", error);
             alert(error.message);
         }
-    };
-
+    }
     return (
         <section className="actividades">
             <h3>Nuestras Actividades</h3>
@@ -543,6 +570,6 @@ const Activities = () => {
             )}
         </section>
     );
-};
+}
 
 export default Activities;

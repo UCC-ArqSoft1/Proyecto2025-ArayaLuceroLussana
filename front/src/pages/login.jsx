@@ -47,12 +47,19 @@ const Login = () => {
             localStorage.setItem("token", token);
             localStorage.setItem("isLoggedIn", "true");
 
-            // Opcional: extraer rol desde el JWT si no lo devolvés aparte
+            // Decodificar el payload del JWT para obtener rol y userId
             const payloadBase64 = token.split('.')[1];
             const decodedPayload = JSON.parse(atob(payloadBase64));
-            const userRole = decodedPayload.rol;
+            const userRole = decodedPayload.rol || decodedPayload.role || "";
+            const userId = decodedPayload.id || decodedPayload.userId || decodedPayload.ID || null;
+
+            if (!userId) {
+                alert("Error: no se pudo obtener el userId del token.");
+                return;
+            }
 
             localStorage.setItem("role", userRole);
+            localStorage.setItem("userId", userId.toString());
 
             setIsLoggedIn(true);
             setRole(userRole);
@@ -61,8 +68,6 @@ const Login = () => {
             console.error("Error en login:", error);
         }
     };
-
-
 
     const handleRegister = async (e) => {
         e.preventDefault();
