@@ -1,21 +1,42 @@
 services:
   db:
-    image: mysql:8
+    image: mysql:8.0
+    restart: always
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: Dionisio1992
       MYSQL_DATABASE: alua
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Dionisio1992
     ports:
       - "3306:3306"
-
+    volumes:
+      - db_data:/var/lib/mysql
   backend:
     build: ./backend
+    restart: always
     ports:
       - "8000:8000"
-    restart: always
     environment:
       DB_USER: root
       DB_PASSWORD: Dionisio1992
       DB_HOST: localhost
       DB_PORT: 3306
       DB_NAME: alua
+    volumes:
+      - ./backend:/app
+  frontend:
+    build: ./frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+    environment:
+      REACT_APP_API_URL: http://localhost:8000/api
+volumes:
+  mysql_data:
+
+
