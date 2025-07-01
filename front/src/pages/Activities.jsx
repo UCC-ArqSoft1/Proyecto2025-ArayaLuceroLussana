@@ -95,10 +95,10 @@ const Activities = () => {
         );
     });
 
-
     const misActividadesInscritas = actividades.filter((act) =>
         inscripciones.includes(act.ID?.toString())
     );
+
     const handleAgregarActividad = async (e) => {
         e.preventDefault();
 
@@ -155,6 +155,66 @@ const Activities = () => {
         } catch (error) {
             console.error("Error:", error);
             alert("No se pudo agregar la actividad: " + error.message);
+        }
+    };
+
+    const handleEditarActividad = async () => {
+        if (!editandoActividad || !editandoActividad.ID) {
+            alert("Actividad inválida para editar.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/admin/activity/${editandoActividad.ID}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Role: localStorage.getItem("role") || "Admin",
+                },
+                body: JSON.stringify(editandoActividad),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || "Error al editar la actividad");
+            }
+
+            setActividades((prev) =>
+                prev.map((act) => (act.ID === editandoActividad.ID ? { ...editandoActividad } : act))
+            );
+            setActividadSeleccionada({ ...editandoActividad });
+            setIsEditing(false);
+            alert("Actividad actualizada exitosamente.");
+        } catch (error) {
+            console.error("Error al editar:", error);
+            alert(error.message);
+        }
+    };
+
+    const handleEliminarActividad = async (id) => {
+        if (!window.confirm("¿Confirmás que querés eliminar esta actividad?")) return;
+
+        try {
+            const response = await fetch(`http://localhost:8080/admin/activity/${id}`, {
+                method: "DELETE",
+                headers: {
+                    Role: localStorage.getItem("role") || "Admin",
+                },
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || "Error al eliminar");
+            }
+
+            setActividades((prev) => prev.filter((act) => act.ID !== id));
+            setActividadSeleccionada(null);
+            alert("Actividad eliminada exitosamente.");
+        } catch (error) {
+            console.error("Error al eliminar:", error);
+            alert(error.message);
         }
     };
 
@@ -278,19 +338,125 @@ const Activities = () => {
                     <button className="cerrar" onClick={cerrarDetalle}>
                         &times;
                     </button>
-                    <h2>{actividadSeleccionada.title}</h2>
+                    <h2>{isEditing ? (
+                        <input
+                            type="text"
+                            value={editandoActividad.title}
+                            onChange={(e) =>
+                                setEditandoActividad({ ...editandoActividad, title: e.target.value })
+                            }
+                        />
+                    ) : (
+                        actividadSeleccionada.title
+                    )}</h2>
 
                     <div className="detalle-contenido">
                         <div className="detalle-texto">
-                            <p><strong>Descripción:</strong> {actividadSeleccionada.description}</p>
-                            <p><strong>Día:</strong> {actividadSeleccionada.day}</p>
-                            <p><strong>Duración:</strong> {actividadSeleccionada.duration} min</p>
-                            <p><strong>Categoría:</strong> {actividadSeleccionada.category}</p>
-                            <p><strong>Estado:</strong> {actividadSeleccionada.state}</p>
-                            <p><strong>Profesor:</strong> {actividadSeleccionada.instructor}</p>
-                            <p><strong>Cupo:</strong> {actividadSeleccionada.cupo}</p>
+                            <p>
+                                <strong>Descripción:</strong>{" "}
+                                {isEditing ? (
+                                    <textarea
+                                        value={editandoActividad.description}
+                                        onChange={(e) =>
+                                            setEditandoActividad({ ...editandoActividad, description: e.target.value })
+                                        }
+                                    />
+                                ) : (
+                                    actividadSeleccionada.description
+                                )}
+                            </p>
+                            <p>
+                                <strong>Día:</strong>{" "}
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={editandoActividad.day}
+                                        onChange={(e) =>
+                                            setEditandoActividad({ ...editandoActividad, day: e.target.value })
+                                        }
+                                    />
+                                ) : (
+                                    actividadSeleccionada.day
+                                )}
+                            </p>
+                            <p>
+                                <strong>Duración:</strong>{" "}
+                                {isEditing ? (
+                                    <input
+                                        type="number"
+                                        value={editandoActividad.duration}
+                                        onChange={(e) =>
+                                            setEditandoActividad({
+                                                ...editandoActividad,
+                                                duration: Number(e.target.value),
+                                            })
+                                        }
+                                    />
+                                ) : (
+                                    `${actividadSeleccionada.duration} min`
+                                )}
+                            </p>
+                            <p>
+                                <strong>Categoría:</strong>{" "}
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={editandoActividad.category}
+                                        onChange={(e) =>
+                                            setEditandoActividad({ ...editandoActividad, category: e.target.value })
+                                        }
+                                    />
+                                ) : (
+                                    actividadSeleccionada.category
+                                )}
+                            </p>
+                            <p>
+                                <strong>Estado:</strong>{" "}
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={editandoActividad.state}
+                                        onChange={(e) =>
+                                            setEditandoActividad({ ...editandoActividad, state: e.target.value })
+                                        }
+                                    />
+                                ) : (
+                                    actividadSeleccionada.state
+                                )}
+                            </p>
+                            <p>
+                                <strong>Profesor:</strong>{" "}
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={editandoActividad.instructor}
+                                        onChange={(e) =>
+                                            setEditandoActividad({ ...editandoActividad, instructor: e.target.value })
+                                        }
+                                    />
+                                ) : (
+                                    actividadSeleccionada.instructor
+                                )}
+                            </p>
+                            <p>
+                                <strong>Cupo:</strong>{" "}
+                                {isEditing ? (
+                                    <input
+                                        type="number"
+                                        value={editandoActividad.cupo}
+                                        onChange={(e) =>
+                                            setEditandoActividad({
+                                                ...editandoActividad,
+                                                cupo: Number(e.target.value),
+                                            })
+                                        }
+                                    />
+                                ) : (
+                                    actividadSeleccionada.cupo
+                                )}
+                            </p>
 
-                            {isLoggedIn && !isEditing && (
+                            {!isEditing && isLoggedIn && (
                                 <button
                                     className="btn-inscribir"
                                     onClick={() =>
@@ -306,6 +472,39 @@ const Activities = () => {
                                 </button>
                             )}
                         </div>
+
+                        {isLoggedIn && role === "admin" && (
+                            <div className="botones-admin">
+                                {isEditing ? (
+                                    <>
+                                        <button className="btn-editar" onClick={handleEditarActividad}>
+                                            Guardar Cambios
+                                        </button>
+                                        <button
+                                            className="btn-eliminar"
+                                            onClick={() => {
+                                                setEditandoActividad({ ...actividadSeleccionada });
+                                                setIsEditing(false);
+                                            }}
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button className="btn-editar" onClick={() => setIsEditing(true)}>
+                                            Editar Actividad
+                                        </button>
+                                        <button
+                                            className="btn-eliminar"
+                                            onClick={() => handleEliminarActividad(actividadSeleccionada.ID)}
+                                        >
+                                            Eliminar Actividad
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
