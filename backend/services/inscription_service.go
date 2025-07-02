@@ -64,18 +64,24 @@ func EditInscription(id uint, new models.Inscription, UserID uint) error {
 }
 
 // Delete an inscription
-func DeleteInscription(id uint, userID uint) error {
+func DeleteInscription(activityID uint, userID uint) error {
 	var inscription models.Inscription
 
-	// Buscar la inscripción por id
-	if err := config.DB.First(&inscription, id).Error; err != nil {
-		return errors.New("inscription not found")
+	// Buscar la inscripción que coincida con el userID y activityID
+	if err := config.DB.Where("user_id = ? AND activity_id = ?", userID, activityID).First(&inscription).Error; err != nil {
+		return errors.New("inscripción no encontrada")
 	}
 
-	// Verificar que la inscripción pertenece al usuario que la quiere borrar
-	if inscription.UserID != userID {
-		return errors.New("no permission to delete this inscription")
+	//Cambia el estado de la inscripción a "cancelado"
+	inscription.State = "Cancelled"
+	if err := config.DB.Save(&inscription).Error; err != nil {
+		return errors.New("error al cancelar la inscripción")
 	}
 
-	return config.DB.Delete(&inscription).Error
+	// Eliminar la inscripción encontrada
+	if err := config.DB.Delete(&inscription).Error; err != nil {
+		return errors.New("error al eliminar la inscripción")
+	}
+
+	return nil
 }

@@ -88,20 +88,20 @@ func EditInscription(c *gin.Context) { //permite cambiar el estado sin eliminar 
 func DeleteInscription(c *gin.Context) {
 	role := c.GetHeader("Role") // Verifica rol
 	if role != "socio" {
-		c.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to perform this action"})
+		c.JSON(http.StatusForbidden, gin.H{"message": "No tienes permiso para realizar esta acción"})
 		return
 	}
 
-	// Obtener ID de la inscripción
-	idStr := c.Param("id")
-	idParsed, err := strconv.ParseUint(idStr, 10, 64)
+	// Obtener activityID del parámetro URL
+	activityIDStr := c.Param("id")
+	activityIDParsed, err := strconv.ParseUint(activityIDStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "ID inválido"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "ID de actividad inválido"})
 		return
 	}
-	inscripcionID := uint(idParsed)
+	activityID := uint(activityIDParsed)
 
-	// Obtener UserID del parámetro URL
+	// Obtener userID del parámetro URL
 	userIDStr := c.Param("UserID")
 	if userIDStr == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "UserID no proporcionado"})
@@ -114,9 +114,9 @@ func DeleteInscription(c *gin.Context) {
 	}
 	userID := uint(userIDParsed)
 
-	// Llamar al servicio para eliminar inscripción con validación
-	if err := services.DeleteInscription(inscripcionID, userID); err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"message": err.Error()})
+	// Llamar al servicio para eliminar la inscripción según userID y activityID
+	if err := services.DeleteInscription(activityID, userID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
 

@@ -62,6 +62,7 @@ const Activities = () => {
                         headers: {
                             "Content-Type": "application/json",
                             Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            Role: "socio",
                         },
                     });
                     if (!res.ok) throw new Error("Error al dar de baja");
