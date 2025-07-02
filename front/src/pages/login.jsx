@@ -1,7 +1,7 @@
 import "@styles/login.css";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Home from './Home'; // Asegúrate de que Home.jsx esté en la misma carpeta o ajusta la ruta
+import Home from './Home';
 
 const Login = () => {
     const navigate = useNavigate();

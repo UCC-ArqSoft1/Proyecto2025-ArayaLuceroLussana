@@ -13,7 +13,7 @@ const Activities = () => {
         category: "",
         state: "",
         instructor: "",
-        cupo: "",
+        cupo: ""
     });
 
     const [isEditing, setIsEditing] = useState(false);
@@ -245,6 +245,7 @@ const Activities = () => {
             alert(error.message);
         }
     }
+
     return (
         <section className="actividades">
             <h3>Nuestras Actividades</h3>

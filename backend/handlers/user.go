@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Get all activities for a user
+// Get actividades por usuario
 func GetActivitiesByUser(c *gin.Context) {
 	role := c.GetHeader("Role")
 	if role != "socio" {

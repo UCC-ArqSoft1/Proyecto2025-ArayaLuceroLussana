@@ -9,7 +9,7 @@ func CreateUser(user *models.User) error {
 	return config.DB.Create(user).Error //Insert a new user in the DB
 }
 
-// GetUserByID retrieves a user by their ID from the database.
+// Recupera el usuario por el email
 func GetUserByEmail(Email string) (*models.User, error) {
 	var user models.User
 	if err := config.DB.Where("Email = ?", Email).First(&user).Error; err != nil {

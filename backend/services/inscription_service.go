@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// Create a new inscription for an activity
+// Crea inscripcion a una actividad
 func CreateInscription(UserID uint, ActivityID uint) error {
 
 	// Verify if the user is already registered for the activity
@@ -17,23 +17,25 @@ func CreateInscription(UserID uint, ActivityID uint) error {
 		return errors.New("user already registered for this activity")
 	}
 
-	// verify if the activity already exists and there's a spot available
+	// Verifica que la actividad exista y haya lugar
 	var activity models.Activity
 	if err := config.DB.First(&activity, ActivityID).Error; err != nil {
 		return errors.New("activity not found")
 	}
-	// Check if the activity is active
+
+	// Verifica si la actividad tiene estado activo
 	if activity.State != "Activo" {
 		return errors.New("inscription couldn't be done: activity is not active")
 	}
 
-	//Count the number of registered users for the activity
+	// Cuenta el numero de registrados para la actividad
 	var totalInscription int64
 	config.DB.Model(&models.Inscription{}).Where("activity_id = ?", ActivityID).Count(&totalInscription)
 	if totalInscription >= int64(activity.Cupo) {
 		return errors.New("there are no spots available for this activity")
 	}
-	// Create a new inscription
+
+	// Crea una nueva inscripcion
 	new := models.Inscription{
 		UserID:     UserID,
 		ActivityID: ActivityID,
@@ -44,26 +46,27 @@ func CreateInscription(UserID uint, ActivityID uint) error {
 	return config.DB.Create(&new).Error
 }
 
-// Change the state of an inscription
+// Cambia el estado de la inscripcion
 func EditInscription(id uint, new models.Inscription, UserID uint) error {
 	var inscription models.Inscription
 
-	//Search for the inscription by id
+	// Busca una inscripcion por ID
 	if err := config.DB.First(&inscription, id).Error; err != nil {
 		return errors.New("inscription not found")
 	}
 
-	//Verify that the inscription belongs to the user
+	// Verifica que la inscripcion sea del usuario
 	if inscription.UserID != UserID {
 		return errors.New("no permission to edit this inscription")
 	}
-	//Only change the state of the inscription
+
+	// Cambia el estado de la inscripcion
 	inscription.State = new.State
 
 	return config.DB.Save(&inscription).Error
 }
 
-// Delete an inscription
+// Borra una inscripcion
 func DeleteInscription(activityID uint, userID uint) error {
 	var inscription models.Inscription
 

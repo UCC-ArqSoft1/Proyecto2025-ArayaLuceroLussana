@@ -1,5 +1,3 @@
-/* Activities.css */
-
 .actividades {
     max-width: 900px;
     margin: 30px auto;
@@ -21,45 +19,29 @@
 
 .controles-actividades {
     display: flex;
-    /* Make it a flex container */
     flex-wrap: wrap;
-    /* Allow items to wrap to the next line on smaller screens */
     gap: 15px;
-    /* Space between the search input and buttons */
     margin-bottom: 25px;
     align-items: center;
-    /* Vertically align items in the middle */
     justify-content: center;
-    /* Horizontally center the items */
 }
 
-/* Styles for the search input itself */
 .search-input {
-    /* <-- TARGETING THE NEW CLASS NAME HERE! */
     flex-grow: 1;
-    /* This is key: allows the input to grow and take up available space */
     padding: 10px 15px;
-    /* Slightly more padding for a larger appearance */
     font-size: 1.1rem;
-    /* Slightly larger font size */
     border: 2px solid #90e0ef;
     border-radius: 8px;
-    /* Slightly more rounded corners */
     outline: none;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     max-width: 100%;
-    /* Ensures it doesn't overflow its parent */
     min-width: 280px;
-    /* Adjust this value as needed for your desired minimum length */
 }
 
 .search-input:focus {
     border-color: #0077b6;
     box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.2);
 }
-
-
-
 
 .btn-agregar {
     background-color: #00b4d8;
@@ -269,8 +251,6 @@
     background-color: #eaaa00;
 }
 
-/* Responsive */
-
 @media (max-width: 600px) {
     .detalle-contenido {
         flex-direction: column;
@@ -289,8 +269,6 @@
         grid-template-columns: 1fr;
     }
 }
-
-/* Nuevos estilos para la sección "Mis Actividades" */
 
 .divider {
     border: 0;
@@ -314,12 +292,9 @@
     border-radius: 6px;
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
-    /* centrado horizontal + espacio abajo */
     max-width: 400px;
     width: 100%;
 }
-
-
 
 .mis-actividades-section h4 {
     margin-top: 0;
@@ -332,15 +307,12 @@
     justify-content: space-between;
     align-items: center;
     padding-right: 35px;
-    /* espacio para que el botón no esté tan pegado */
     margin-bottom: 10px;
     position: relative;
-    /* ya no necesario si sacás el absolute */
 }
 
 .btn-dar-baja-inline {
     position: static;
-    /* O directamente eliminá 'position' */
     margin-left: 10px;
 }
 
@@ -356,7 +328,6 @@
     font-style: italic;
 }
 
-/* Inputs y textarea deshabilitados */
 .formulario-nueva-actividad input:disabled,
 .formulario-nueva-actividad textarea:disabled {
     background-color: #e0f0f9;
@@ -365,7 +336,6 @@
     cursor: not-allowed;
 }
 
-/* Cursor pointer en elementos clicables */
 .actividad,
 .btn-agregar,
 .btn-inscribir,
@@ -376,7 +346,6 @@
     cursor: pointer;
 }
 
-/* Ajustes táctiles para móviles */
 .input-busqueda input,
 .btn-agregar,
 .formulario-nueva-actividad button,
@@ -413,11 +382,8 @@
     box-shadow: 0 2px 6px rgba(217, 4, 41, 0.6);
     transition: background-color 0.3s ease;
     margin-left: auto;
-    /* para que se alinee a la derecha si está en un flex container */
     display: block;
 }
-
-/* === Estilos para modo edición: inputs y textarea sin bordes ni fondo === */
 
 .formulario-edicion input,
 .formulario-edicion textarea {
@@ -430,7 +396,6 @@
     padding: 0 !important;
     margin: 0 !important;
     resize: none;
-    /* para textarea */
     outline: none !important;
     width: 100%;
     cursor: text;

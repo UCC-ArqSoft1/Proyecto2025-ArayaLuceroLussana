@@ -9,21 +9,21 @@ import (
 	"errors"
 )
 
-// ValidateState checks if the provided state is valid.
+// Verifica que el estado sea valido
 var possibleStates = map[string]bool{
 	"Activo":     true,
 	"Inactivo":   true,
 	"Finalizado": true,
 }
 
-// Get all the activities from the database
+// Get las actividades de la base de datos
 func ShowActivities() ([]models.Activity, error) {
 	var activities []models.Activity
 	result := config.DB.Find(&activities)
 	return activities, result.Error
 }
 
-// Get an activity by ID
+// Get actividad con el ID
 func GetActivityByID(id string) (*models.Activity, error) {
 	var activity models.Activity //Devuelve un puntero a la estructura Actividad
 	result := config.DB.First(&activity, id)
@@ -33,7 +33,7 @@ func GetActivityByID(id string) (*models.Activity, error) {
 	return &activity, nil
 }
 
-// Add a new activity to the database
+// Agrega una nueva actidad en la BD
 func AddActivity(activity models.Activity) error {
 	if !possibleStates[activity.State] {
 		return errors.New("Invalid state ")
@@ -41,14 +41,15 @@ func AddActivity(activity models.Activity) error {
 	return config.DB.Create(&activity).Error
 }
 
-// Update an activitie preload and save the changes in the DB
+// Actualiza las actividades precargadas y guarda los cambios en la BD
 func UpdateActivity(id string, updatedActivity models.Activity) error {
 	var activity models.Activity
 	result := config.DB.First(&activity, id)
 	if result.Error != nil {
 		return result.Error
 	}
-	//Update the fields of the activity with the new values
+
+	// Actualiza los campos de las atividades con los nuevos valores
 	activity.Title = updatedActivity.Title
 	activity.Description = updatedActivity.Description
 	activity.Day = updatedActivity.Day
@@ -64,7 +65,7 @@ func UpdateActivity(id string, updatedActivity models.Activity) error {
 	return config.DB.Save(&activity).Error
 }
 
-// Delete an activity by id
+// Delete una actividad con el ID
 func DeleteActivity(id uint) error {
 	result := config.DB.Delete(&models.Activity{}, id) //usa soft delete por defecto (gorm.model) el registro no se borra del todo sino se marca como eliminado
 	return result.Error

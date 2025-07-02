@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Get all the activities (public)
+// Get todas las actividades (public)
 func ShowActivities(c *gin.Context) {
 	activities, err := services.ShowActivities()
 	if err != nil {
@@ -23,7 +23,7 @@ func ShowActivities(c *gin.Context) {
 	c.JSON(http.StatusOK, activities)
 }
 
-// Get a specific activity by ID (public)
+// Get una actividad por ID (public)
 func GetActivityByID(c *gin.Context) {
 	id := c.Param("id")
 	activity, err := services.GetActivityByID(id)
@@ -34,7 +34,7 @@ func GetActivityByID(c *gin.Context) {
 	c.JSON(http.StatusOK, activity)
 }
 
-// Add a new activity (admin)
+// Agrega una nueva actividad (admin)
 func AddActivity(c *gin.Context) {
 	role := c.GetHeader("Role") //verifica el rol del usuario
 	if role != "Admin" {
@@ -56,7 +56,7 @@ func AddActivity(c *gin.Context) {
 	c.JSON(http.StatusCreated, activity)
 }
 
-// Update an activity preload (admin)
+// Actualiza una actividad precargada (admin)
 func UpdateActivity(c *gin.Context) {
 	role := c.GetHeader("Role") //verifica el rol del usuario
 	if role != "Admin" {
@@ -77,7 +77,7 @@ func UpdateActivity(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Activity updated successfully"})
 }
 
-// Delete an activity (admin)
+// Delete una actividad (admin)
 func DeleteActivity(c *gin.Context) {
 	role := c.GetHeader("Role") // Verifica el rol del usuario
 	if role != "Admin" {
