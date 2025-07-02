@@ -3,8 +3,10 @@
 package handlers
 
 import (
+	"alua/config"
 	"alua/models"
 	"alua/services"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -77,21 +79,50 @@ func UpdateActivity(c *gin.Context) {
 
 // Delete an activity (admin)
 func DeleteActivity(c *gin.Context) {
-	role := c.GetHeader("Role") //verifica el rol del usuario
+	role := c.GetHeader("Role") // Verifica el rol del usuario
 	if role != "Admin" {
 		c.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to perform this action"})
 		return
 	}
 
+	// Obtener el ID de la actividad
 	idStr := c.Param("id")
-	id, err := strconv.ParseUint(idStr, 10, 64) //convierte el ID recibido como string a tipo uint
+	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid ID "})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid ID"})
 		return
 	}
-	if err := services.DeleteActivity(uint(id)); err != nil {
+	activityID := uint(id)
+
+	// Buscar inscripciones vinculadas a esta actividad
+	var inscripciones []models.Inscription
+	if err := config.DB.Where("activity_id = ?", activityID).Find(&inscripciones).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error retrieving inscriptions"})
+		return
+	}
+
+	// Guardar los IDs de los usuarios inscriptos
+	var userIDs []uint
+	for _, ins := range inscripciones {
+		userIDs = append(userIDs, ins.UserID)
+	}
+
+	// Eliminar inscripciones asociadas a esta actividad
+	if err := config.DB.Where("activity_id = ?", activityID).Delete(&models.Inscription{}).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error deleting inscriptions"})
+		return
+	}
+
+	// Eliminar la actividad
+	if err := services.DeleteActivity(activityID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error deleting the activity"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Activity deleted successfully"})
+
+	// Notificar a los usuarios (simulado con logs por ahora)
+	for _, userID := range userIDs {
+		log.Printf("Actividad ID %d eliminada: notificar al usuario ID %d", activityID, userID)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Activity deleted successfully and users notified"})
 }

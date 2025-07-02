@@ -62,7 +62,6 @@ const Activities = () => {
                         headers: {
                             "Content-Type": "application/json",
                             Authorization: `Bearer ${localStorage.getItem("token")}`,
-                            Role: "socio",
                         },
                     });
                     if (!res.ok) throw new Error("Error al dar de baja");
@@ -129,10 +128,10 @@ const Activities = () => {
     const misActividadesInscritas = actividades.filter((act) =>
         inscripciones.includes(act.ID?.toString())
     );
+
     const handleAgregarActividad = async (e) => {
         e.preventDefault();
 
-        // Validación mínima
         if (!nuevaActividad.title || !nuevaActividad.day || !nuevaActividad.category) {
             alert("Por favor completá los campos obligatorios.");
             return;
@@ -159,7 +158,6 @@ const Activities = () => {
                 body: JSON.stringify(actividadFormateada),
             });
 
-            // Si hay error, intento mostrar el mensaje del backend
             if (!response.ok) {
                 const errorData = await response.json();
                 const msg = errorData.message || "Error al crear la actividad";
@@ -246,7 +244,7 @@ const Activities = () => {
             console.error("Error al eliminar:", error);
             alert(error.message);
         }
-    };
+    }
     return (
         <section className="actividades">
             <h3>Nuestras Actividades</h3>
